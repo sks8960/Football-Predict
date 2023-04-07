@@ -7,7 +7,7 @@ const connection = mysql.createConnection({
   password: "shin9790",
   database: "db",
 });
-
+//epl만 출력
 const options = {
   method: "GET",
   hostname: "api-football-v1.p.rapidapi.com",
