@@ -1,3 +1,4 @@
+const mysql = require('mysql');
 const leagueSelect = document.getElementById("league");
 const teamSelect = document.getElementById("team");
 const getTeamButton = document.getElementById("getTeamButton");
@@ -7,49 +8,133 @@ leagueSelect.addEventListener("change", function () {
   switch (leagueSelect.value) {
     case "epl":
       setTeams([
-        "맨체스터 유나이티드",
-        "첼시",
-        "리버풀",
-        // 나머지 프리미어 리그 팀들을 추가합니다.
+        "Manchester United",
+        "Newcastle",
+        "Bournemouth",
+        "Fulham",
+        "Wolves",
+        "Liverpool",
+        "Southampton",
+        "Arsenal",
+        "Everton",
+        "Leicester",
+        "Tottenham",
+        "West Ham",
+        "Chelsea",
+        "Manchester City",
+        "Brighton",
+        "Crystal Palace",
+        "Brentford",
+        "Leeds",
+        "Nottingham Forest",
+        "Aston Villa",
       ]);
       break;
     case "laliga":
       setTeams([
-        "레알 마드리드",
-        "바르셀로나",
-        "아틀레티코 마드리드",
-        // 나머지 라 리가 팀들을 추가합니다.
+        "Barcelona",
+        "Atletico Madrid",
+        "Athletic Club",
+        "Valencia",
+        "Villarreal",
+        "Sevilla",
+        "Celta Vigo",
+        "Espanyol",
+        "Real Madrid",
+        "Real Betis",
+        "Getafe",
+        "Getafe",
+        "Girona",
+        "Real Sociedad",
+        "Valladolid",
+        "Almeria",
+        "Cadiz",
+        "Osasuna",
+        "Rayo Vallecano",
+        "Elche",
+        "Mallorca",
       ]);
       break;
     case "seriea":
       setTeams([
-        "유벤투스",
-        "인터 밀란",
-        "AC 밀란",
-        // 나머지 세리에 A 팀들을 추가합니다.
+        "Lazio",
+        "Sassuolo",
+        "AC Milan",
+        "Napoli",
+        "Udinese",
+        "Juventus",
+        "AS Roma",
+        "Sampdoria",
+        "Atalanta",
+        "Bologna",
+        "Fiorentina",
+        "Torino",
+        "Verona",
+        "Inter",
+        "Empoli",
+        "Salernitana",
+        "Spezia",
+        "Cremonese",
+        "Lecce",
+        "Monza",
       ]);
       break;
     case "bundesliga":
       setTeams([
-        "바이에른 뮌헨",
-        "도르트문트",
-        "라이프치히",
-        // 나머지 분데스리가 팀들을 추가합니다.
+        "Bayern Munich",
+        "Hertha Berlin",
+        "SC Freiburg",
+        "VfL Wolfsburg",
+        "Werder Bremen",
+        "Borussia Monchengladbach",
+        "FSV Mainz 05",
+        "Borussia Dortmund",
+        "1899 Hoffenheim",
+        "Bayer Leverkusen",
+        "Eintracht Frankfurt",
+        "FC Augsburg",
+        "VfB Stuttgart",
+        "RB Leipzig",
+        "FC Schalke 04",
+        "VfL BOCHUM",
+        "Union Berlin",
+        "FC Koln",        
       ]);
       break;
     case "ligue1":
       setTeams([
-        "파리 생제르망",
-        "리옹",
-        "마르세유",
-        // 나머지 리그 1 팀들을 추가합니다.
+        "Angers",
+        "Lille",
+        "Lyon",
+        "Marseille",
+        "Montpellier",
+        "Nantes",
+        "Nice",
+        "Paris Saint Germain",
+        "Monaco",
+        "Reims",
+        "Rennes",
+        "Strasbourg",
+        "Toulouse",
+        "Lorient",
+        "Ajaccio",
+        "Clermont Foot",
+        "Stade Brestois 29",
+        "Auxerre",
+        "Estac Troyes",
+        "Lens",
       ]);
       break;
     default:
       setTeams([]);
   }
 });
-
+const connection = mysql.createConnection({
+  host: 'localhost',
+  user: 'root',
+  password: 'shin9790',
+  database: 'db'
+});
 function setTeams(teams) {
   // 이전에 선택된 팀을 초기화합니다.
   teamSelect.innerHTML = "<option value=''>선택하세요</option>";
@@ -63,10 +148,31 @@ function setTeams(teams) {
   });
 }
 getTeamButton.addEventListener("click", function () {
-    const selectedTeam = teamSelect.value;
-    if (selectedTeam !== "") {
-      alert("선택된 팀은 " + selectedTeam + "입니다.");
-    } else {
-      alert("팀을 선택해주세요.");
-    }
-  });
+  const selectedTeam = teamSelect.value;
+  if (selectedTeam !== "") {
+    alert("선택된 팀은 " + selectedTeam + "입니다.");
+    connection.connect((err) => {
+      if (err) {
+        console.error('Error connecting to database: ' + err.stack);
+        return;
+      }
+    
+      console.log('Connected to database with thread ID: ' + connection.threadId);
+    });
+    
+    connection.query('SELECT team_id FROM teams WHERE team_name = ?', getTeamName, (error, results, fields) => {
+        if (error) {
+          console.error('Error executing query: ' + error.stack);
+          return;
+        }
+      
+        console.log('Result:', results);
+      });
+  } else {
+    alert("팀을 선택해주세요.");
+  }
+  getTeamName = selectedTeam;
+});
+
+
+module.exports = getTeamName;
