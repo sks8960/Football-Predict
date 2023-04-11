@@ -1,4 +1,4 @@
-const mysql = require('mysql');
+const mysql = require('mysql'); // db연동 필요
 const leagueSelect = document.getElementById("league");
 const teamSelect = document.getElementById("team");
 const getTeamButton = document.getElementById("getTeamButton");
@@ -151,6 +151,7 @@ getTeamButton.addEventListener("click", function () {
   const selectedTeam = teamSelect.value;
   if (selectedTeam !== "") {
     alert("선택된 팀은 " + selectedTeam + "입니다.");
+   //여기부터 수정 필요 
     connection.connect((err) => {
       if (err) {
         console.error('Error connecting to database: ' + err.stack);
