@@ -6,7 +6,7 @@ const options = {
     "method": "GET",
     "hostname": "api-football-v1.p.rapidapi.com",
     "port": null,
-    "path": "/v3/teams?league=61&season=2022",
+    "path": "/v3/teams?league=140&season=2022",
     "headers": {
         "X-RapidAPI-Key": "96e6fbd9e1msh363fb680c23119fp131a0ajsn8edccdfdd332",
         "X-RapidAPI-Host": "api-football-v1.p.rapidapi.com",

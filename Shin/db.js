@@ -1,10 +1,15 @@
-var mysql = require('mysql');
-var db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'shin9790',
-    database: 'test'
+const mysql = require('mysql'); // db연동 필요
+const connection = mysql.createConnection({
+  host: 'localhost',
+  user: 'root',
+  password: 'shin9790',
+  database: 'db'
 });
-db.connect();
-
-module.exports = db;
+connection.connect((err) => {
+  if (err) {
+    console.error('Error connecting to database: ' + err.stack);
+    return;
+  }
+  console.log('Connected to database with thread ID: ' + connection.threadId);
+});
+module.exports = connection;
