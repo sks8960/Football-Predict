@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Excel File Viewer</title>
+    <style>
+        h1 {
+            background-color: beige;
+            text-align: center;
+        }
+
+        table {
+
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>분석</h1>
+    <a href="/">메인 화면</a>
+    <table>
+        <thead>
+            <tr>
+                <th>id</th>
+                <th>referee</th>
+                <th>periods.first</th>
+                <th>periods.second</th>
+                <th>venue.id</th>
+                <th>venue.city</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% abcd.forEach(function(row) { %>
+                <tr>
+                    <td>
+                        <%= row.id %>
+                    </td>
+                    <td>
+                        <%= row.referee %>
+                    </td>
+                    <td>
+                        <%= row['periods.first'] %>
+                    </td>
+                    <td>
+                        <%= row['periods.second'] %>
+                    </td>
+                    <td>
+                        <%= row['venue.id'] %>
+                    </td>
+                    <td>
+                        <%= row['venue.city'] %>
+                    </td>
+                </tr>
+                <% }); %>
+        </tbody>
+    </table>
+    <form action="search_process">
+        <input type="text" name="name" placeholder="miguel ortiz">
+        <button type="submit"></button>
+    </form>
+    <form action="stastics_process">
+        <input type="text" name="fixture" placeholder="number">
+        <button type="submit"></button>
+    </form>
+    <form action="search_team_process">
+        <label for="league">리그:</label>
+        <select id="league" name="league">
+            <option value="">선택하세요</option>
+            <option value="epl">프리미어 리그</option>
+            <option value="laliga">라 리가</option>
+            <option value="seriea">세리에 A</option>
+            <option value="bundesliga">분데스리가</option>
+            <option value="ligue1">리그 1</option>
+        </select>
+
+        <label for="team">팀:</label>
+        <select id="team" name="team">
+            <option value="">선택하세요</option>
+        </select>
+        <button id="getTeamButton">선택</button>
+    </form>
+    <form action="chat" target="_blank">
+        <button>채팅하기</button>
+    </form>
+    <script src="../selectname.js"></script>
+    <script src="../getTeamStatistics.js"></script>
+</body>
+
+</html>

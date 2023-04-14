@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Statistics</title>
+    <style>
+        table,
+        th,
+        td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Statistics</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Type</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% for (var i=0; i < statistics.length; i++) { %>
+                <tr>
+                    <td>
+                        <%= statistics[i].type %>
+                    </td>
+                    <td>
+                        <%= statistics[i].value %>
+                    </td>
+                </tr>
+                <% } %>
+        </tbody>
+    </table>
+</body>
+
+</html>
