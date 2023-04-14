@@ -144,26 +144,17 @@ function setTeams(teams) {
 getTeamButton.addEventListener("click", function () {
   const selectedTeam = teamSelect.value;
   if (selectedTeam !== "") {
-    // AJAX 요청을 보냅니다.
-    const xhr = new XMLHttpRequest();
-    xhr.open('POST', 'http://localhost:3000/sendDataToServer'); // 서버로 보낼 요청 URL을 입력합니다.
-    xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.send(JSON.stringify({ selectedTeam })); // 선택된 팀 정보를 JSON 형식으로 변환하여 전송합니다.
-    xhr.onreadystatechange = function() {
-      if (xhr.readyState === XMLHttpRequest.DONE) {
-        if (xhr.status === 200) {
-          const teamId = xhr.responseText;
-    
-          // 선택된 팀의 ID를 출력하는 span 엘리먼트를 가져옵니다.
-          const teamIdSpan = document.getElementById('teamId');
-          
-          // span 엘리먼트의 텍스트 콘텐츠를 서버 응답에서 받은 팀 ID로 설정합니다.
-          teamIdSpan.textContent = teamId;
-        } else {
-          console.log('There was a problem with the request.');
-        }
-      }
-    };
+    alert("선택된 팀은 " + selectedTeam + "입니다.");
+
+    // REST API를 호출합니다.
+    fetch(`http://localhost:3000/teams/${selectedTeam}`)
+      .then(response => response.json())
+      .then(data => {
+        console.log(data);
+        const teamIdSpan = document.getElementById("teamId");
+        teamIdSpan.textContent = data.teamId; // 응답 받은 데이터를 HTML에 출력합니다.
+      })
+      .catch(error => console.error(error));
   } else {
     alert("팀을 선택해주세요.");
   }
