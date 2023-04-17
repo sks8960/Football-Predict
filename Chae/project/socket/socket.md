@@ -91,7 +91,13 @@ fetchSockets : 소켓 반환
 socket.handshake - 서버측 코드
 - headers, query, auth, time, issued, url, address, sdomain. sercure 포함
 
-socket.rooms : socket이 현재 있는 방에 대한 참조
+socket.rooms : socket이 현재 있는 방에 대한 참조  
 console.log(socket.rooms); //   { <socket.id> }  
 socket.join("room1");  
 console.log(socket.rooms); //   { <socket.id>, "room1" }
+
+socket.on(eventName, listener) : eventName이 올때 listener을 받음
+socket.once(eventName, listener) : event를 한번만 실행
+socket.off(eventName, listener) : event에서 listener를 제거
+socket.removeAllListener([eventName]) : event에서 모든 listener를 제거
+
