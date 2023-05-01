@@ -1,8 +1,9 @@
 const express = require('express');
 const app = express();
 const db = require('./db.js');
+const https = require('https');
 
-app.use('/', express.static(__dirname + '/Shin', { 
+app.use('/', express.static(__dirname + '/Shin', {
   setHeaders: function (res, path, stat) {
     if (path.endsWith('.js')) {
       res.setHeader('Content-Type', 'text/javascript');
@@ -23,7 +24,11 @@ app.get('/SelectName.js', function (req, res) {
 // 특정 팀 정보를 조회하는 라우트
 app.get('/teams/:teamName', (req, res) => {
   const teamName = req.params.teamName;
-  db.query(`SELECT team_id FROM teams WHERE team_name = '${teamName}'`, function (error, results, fields) {
+  db.query(`SELECT team_id FROM teams WHERE team_name = '${teamName}'`, function (
+    error,
+    results,
+    fields
+  ) {
     if (error) {
       console.log(error);
       res.status(500).send('Internal server error');
@@ -31,10 +36,79 @@ app.get('/teams/:teamName', (req, res) => {
     }
     const teamId = results[0].team_id;
     console.log(`Team ID: ${teamId}`);
-    res.json({ teamId }); // JSON 형태로 데이터를 전송합니다.
+    const options = {
+      method: 'GET',
+      hostname: 'api-football-v1.p.rapidapi.com',
+      port: null,
+      path: `/v3/fixtures?season=2022&team=${teamId}&last=5`,
+      headers: {
+        'x-rapidapi-key': '96e6fbd9e1msh363fb680c23119fp131a0ajsn8edccdfdd332',
+        'x-rapidapi-host': 'api-football-v1.p.rapidapi.com',
+        useQueryString: true,
+      },
+    };
+
+    const req = https.request(options, function (response) {
+      const chunks = [];
+
+      response.on('data', function (chunk) {
+        chunks.push(chunk);
+      });
+
+      response.on('end', function () {
+        const body = Buffer.concat(chunks);
+        const fixtures = JSON.parse(body.toString()).response;
+        const fixtureIds = fixtures.map((fixture) => fixture.fixture.id);
+        //console.log(fixtureIds);
+
+        const options2 = {
+          method: 'GET',
+          hostname: 'api-football-v1.p.rapidapi.com',
+          port: null,
+          headers: {
+            'x-rapidapi-key': '96e6fbd9e1msh363fb680c23119fp131a0ajsn8edccdfdd332',
+            'x-rapidapi-host': 'api-football-v1.p.rapidapi.com',
+            useQueryString: true,
+          },
+        };
+
+        const statsPromises = fixtureIds.map((fixtureId) => {
+          return new Promise((resolve, reject) => {
+            options2.path = `/v3/fixtures/statistics?fixture=${fixtureId}`;
+
+            const req2 = https.request(options2, function (response2) {
+              const chunks2 = [];
+
+              response2.on('data', function (chunk) {
+                chunks2.push(chunk);
+              });
+
+              response2.on('end', function () {
+                const body2 = Buffer.concat(chunks2);
+                const stats = JSON.parse(body2.toString()).response;
+                resolve(stats);
+                console.log(stats);
+              });
+            });
+
+            req2.end();
+          });
+        });
+
+        Promise.all(statsPromises).then((stats) => {
+          //console.log(stats); // 통계 데이터를 console.log로 출력합니다.
+          //console.log(fixtureIds);
+          res.json({ stats }); // JSON 형태로 데이터를 전송합니다.
+        }).catch((error) => {
+          console.error(error);
+          res.status(500).send('Internal server error');
+        });
+      });
+    });
+
+    req.end();
   });
 });
-
 
 app.listen(3000, () => {
   console.log('Server running on port 3000');

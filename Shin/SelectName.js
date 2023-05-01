@@ -144,18 +144,34 @@ function setTeams(teams) {
 getTeamButton.addEventListener("click", function () {
   const selectedTeam = teamSelect.value;
   if (selectedTeam !== "") {
-    alert("선택된 팀은 " + selectedTeam + "입니다.");
+  alert("선택된 팀은 " + selectedTeam + "입니다.");
+  
 
-    // REST API를 호출합니다.
-    fetch(`http://localhost:3000/teams/${selectedTeam}`)
-      .then(response => response.json())
-      .then(data => {
-        console.log(data);
-        const teamIdSpan = document.getElementById("teamId");
-        teamIdSpan.textContent = data.teamId; // 응답 받은 데이터를 HTML에 출력합니다.
-      })
-      .catch(error => console.error(error));
+  // REST API를 호출합니다.
+  fetch(`http://localhost:3000/teams/${selectedTeam}`)
+  .then(response => response.json())
+  .then(data => {
+    const stats = data.stats.filter(stat => stat.fixture); // fixture 객체가 있는 요소들만 걸러냄
+    const fixtureIds = stats.map(stat => stat.fixture.id);
+    const fixtureId = document.getElementById("fixtureId");
+    if (fixtureId) {
+      fixtureId.textContent = fixtureIds.join(', ');
+    }
+
+    // stats를 HTML에 출력
+    const statsList = document.getElementById("statsList");
+    statsList.innerHTML = "";
+    stats.forEach(stat => {
+      const listItem = document.createElement("li");
+      listItem.textContent = `${stat.fixture.date} - ${stat.fixture.homeTeam.name} vs ${stat.fixture.awayTeam.name}: ${stat.score.fullTime.homeTeam} - ${stat.score.fullTime.awayTeam}`;
+      statsList.appendChild(listItem);
+    });
+    
+    // console.log(stat)를 then 콜백 함수 내부로 이동
+    console.log(statsList);
+  })
+  .catch(error => console.error(error));
   } else {
-    alert("팀을 선택해주세요.");
+  alert("팀을 선택해주세요.");
   }
-});
+  })
