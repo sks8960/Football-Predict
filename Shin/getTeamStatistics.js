@@ -87,7 +87,8 @@ app.get('/teams/:teamName', (req, res) => {
                 const body2 = Buffer.concat(chunks2);
                 const stats = JSON.parse(body2.toString()).response;
                 resolve(stats);
-                console.log(stats);
+                
+                
               });
             });
 
@@ -95,14 +96,31 @@ app.get('/teams/:teamName', (req, res) => {
           });
         });
 
-        Promise.all(statsPromises).then((stats) => {
-          //console.log(stats); // 통계 데이터를 console.log로 출력합니다.
-          //console.log(fixtureIds);
-          res.json({ stats }); // JSON 형태로 데이터를 전송합니다.
-        }).catch((error) => {
-          console.error(error);
-          res.status(500).send('Internal server error');
-        });
+        Promise.all(statsPromises)
+  .then((statsArray) => {
+    const allStats = [];
+
+    statsArray.forEach((stats) => {
+      stats.forEach((item) => {
+        if (item.hasOwnProperty('team') && item.hasOwnProperty('statistics')) {
+          const teamInfo = item.team;
+          const statistics = item.statistics;
+
+          console.log('Team Info:', teamInfo);
+          console.log('Statistics:', statistics);
+
+          allStats.push({ teamInfo, statistics });
+        } else {
+          console.log('Invalid data:', item);
+        }
+      });
+    });
+    res.json({ stats: allStats });
+  })
+  .catch((error) => {
+    console.error(error);
+    res.status(500).send('Internal server error');
+  });
       });
     });
 

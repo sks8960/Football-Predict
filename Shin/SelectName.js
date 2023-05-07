@@ -144,34 +144,47 @@ function setTeams(teams) {
 getTeamButton.addEventListener("click", function () {
   const selectedTeam = teamSelect.value;
   if (selectedTeam !== "") {
-  alert("선택된 팀은 " + selectedTeam + "입니다.");
-  
+    alert("선택된 팀은 " + selectedTeam + "입니다.");
 
-  // REST API를 호출합니다.
-  fetch(`http://localhost:3000/teams/${selectedTeam}`)
-  .then(response => response.json())
-  .then(data => {
-    const stats = data.stats.filter(stat => stat.fixture); // fixture 객체가 있는 요소들만 걸러냄
-    const fixtureIds = stats.map(stat => stat.fixture.id);
-    const fixtureId = document.getElementById("fixtureId");
-    if (fixtureId) {
-      fixtureId.textContent = fixtureIds.join(', ');
-    }
+    // REST API를 호출합니다.
+    fetch(`http://localhost:3000/teams/${selectedTeam}`)
+      .then(response => response.json())
+      .then(data => {
+        const stats = data.stats;
 
-    // stats를 HTML에 출력
-    const statsList = document.getElementById("statsList");
-    statsList.innerHTML = "";
-    stats.forEach(stat => {
-      const listItem = document.createElement("li");
-      listItem.textContent = `${stat.fixture.date} - ${stat.fixture.homeTeam.name} vs ${stat.fixture.awayTeam.name}: ${stat.score.fullTime.homeTeam} - ${stat.score.fullTime.awayTeam}`;
-      statsList.appendChild(listItem);
-    });
-    
-    // console.log(stat)를 then 콜백 함수 내부로 이동
-    console.log(statsList);
-  })
-  .catch(error => console.error(error));
+        // stats를 HTML에 출력
+        const statsList = document.getElementById("statsList");
+        statsList.innerHTML = ""; // 기존 내용을 초기화
+
+        if (stats.length === 0) {
+          const listItem = document.createElement("li");
+          listItem.textContent = "통계 정보가 없습니다.";
+          statsList.appendChild(listItem);
+        } else {
+          stats.forEach(stat => {
+            if (stat.hasOwnProperty("teamInfo") && stat.hasOwnProperty("statistics")) {
+              const teamInfo = stat.teamInfo;
+              const statistics = stat.statistics;
+
+              const listItem = document.createElement("li");
+              listItem.innerHTML = `
+                <b>Team Info:</b> ${JSON.stringify(teamInfo)}<br>
+                <b>Statistics:</b> ${JSON.stringify(statistics)}<br><br>
+              `;
+              statsList.appendChild(listItem);
+            } else {
+              const listItem = document.createElement("li");
+              listItem.textContent = "잘못된 데이터입니다.";
+              statsList.appendChild(listItem);
+            }
+          });
+        }
+
+        // 콘솔 출력
+        console.dir(stats);
+      })
+      .catch(error => console.error(error));
   } else {
-  alert("팀을 선택해주세요.");
+    alert("팀을 선택해주세요.");
   }
-  })
+});
