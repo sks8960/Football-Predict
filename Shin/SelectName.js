@@ -162,13 +162,13 @@ getTeamButton.addEventListener("click", function () {
           statsList.appendChild(listItem);
         } else {
           stats.forEach(stat => {
-            if (stat.hasOwnProperty("teamInfo") && stat.hasOwnProperty("statistics")) {
-              const teamInfo = stat.teamInfo;
+            if (stat.hasOwnProperty("teamName") && stat.hasOwnProperty("statistics")) {
+              const teamName = stat.teamName;
               const statistics = stat.statistics;
 
               const listItem = document.createElement("li");
               listItem.innerHTML = `
-                <b>Team Info:</b> ${JSON.stringify(teamInfo)}<br>
+                <b>Team Name:</b> ${JSON.stringify(teamName)}<br>
                 <b>Statistics:</b> ${JSON.stringify(statistics)}<br><br>
               `;
               statsList.appendChild(listItem);

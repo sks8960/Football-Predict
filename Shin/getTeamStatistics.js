@@ -97,30 +97,50 @@ app.get('/teams/:teamName', (req, res) => {
         });
 
         Promise.all(statsPromises)
-  .then((statsArray) => {
-    const allStats = [];
-
-    statsArray.forEach((stats) => {
-      stats.forEach((item) => {
-        if (item.hasOwnProperty('team') && item.hasOwnProperty('statistics')) {
-          const teamInfo = item.team;
-          const statistics = item.statistics;
-
-          console.log('Team Info:', teamInfo);
-          console.log('Statistics:', statistics);
-
-          allStats.push({ teamInfo, statistics });
-        } else {
-          console.log('Invalid data:', item);
-        }
-      });
-    });
-    res.json({ stats: allStats });
-  })
-  .catch((error) => {
-    console.error(error);
-    res.status(500).send('Internal server error');
-  });
+        .then((statsArray) => {
+          const allStats = [];
+      
+          statsArray.forEach((stats) => {
+            stats.forEach((item) => {
+              if (item.hasOwnProperty('team') && item.hasOwnProperty('statistics')) {
+                const teamInfo = item.team;
+                const statistics = item.statistics;
+      
+                const teamName = teamInfo.name; // 팀 이름 가져오기
+      
+                console.log('Team Name:', teamName);
+                console.log('Statistics:', statistics);
+      
+                // 값 중에서 null인 경우 0으로 바꾸고 % 문자가 있다면 제거
+                const processedStatistics = {};
+      
+                statistics.forEach((stat) => {
+                  if (stat.hasOwnProperty('type') && stat.hasOwnProperty('value')) {
+                    let processedValue = stat.value;
+      
+                    if (processedValue === null) {
+                      processedValue = 0;
+                    } else if (typeof processedValue === 'string' && processedValue.includes('%')) {
+                      processedValue = parseFloat(processedValue.replace('%', ''));
+                    }
+      
+                    processedStatistics[stat.type] = processedValue;
+                  }
+                });
+      
+                allStats.push({ teamName, statistics: processedStatistics });
+              } else {
+                console.log('Invalid data:', item);
+              }
+            });
+          });
+      
+          res.json({ stats: allStats });
+        })
+        .catch((error) => {
+          console.error(error);
+          res.status(500).send('Internal server error');
+        });
       });
     });
 
