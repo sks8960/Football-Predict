@@ -151,40 +151,90 @@ getTeamButton.addEventListener("click", function () {
       .then(response => response.json())
       .then(data => {
         const stats = data.stats;
+        console.log(stats);
+        const chartData = [];
 
-        // stats를 HTML에 출력
-        const statsList = document.getElementById("statsList");
-        statsList.innerHTML = ""; // 기존 내용을 초기화
+        stats.forEach(item => {
+          const teamName = item.teamName;
+          const statistics = item.statistics;
 
-        if (stats.length === 0) {
-          const listItem = document.createElement("li");
-          listItem.textContent = "통계 정보가 없습니다.";
-          statsList.appendChild(listItem);
-        } else {
-          stats.forEach(stat => {
-            if (stat.hasOwnProperty("teamName") && stat.hasOwnProperty("statistics")) {
-              const teamName = stat.teamName;
-              const statistics = stat.statistics;
+          Object.entries(statistics).forEach(([fixtureId, value]) => { // fixtureId를 key로 사용하여 그룹화합니다.
+            chartData.push({ fixtureId, value, teamName });
+          });
+        });
 
-              const listItem = document.createElement("li");
-              listItem.innerHTML = `
-                <b>Team Name:</b> ${JSON.stringify(teamName)}<br>
-                <b>Statistics:</b> ${JSON.stringify(statistics)}<br><br>
-              `;
-              statsList.appendChild(listItem);
-            } else {
-              const listItem = document.createElement("li");
-              listItem.textContent = "잘못된 데이터입니다.";
-              statsList.appendChild(listItem);
+        console.log(chartData);
+
+        const groupedChartData = {};
+
+        chartData.forEach((data) => {
+          const fixtureId = data.fixtureId;
+
+          if (!groupedChartData[fixtureId]) {
+            groupedChartData[fixtureId] = [];
+          }
+
+          groupedChartData[fixtureId].push({
+            teamName: data.teamName,
+            value: data.value
+          });
+        });
+
+        const chartContainer = document.getElementById('chart-container');
+        chartContainer.innerHTML = ''; // 기존의 캔버스 요소를 모두 삭제합니다.
+
+        // groupedChartData에 있는 fixtureId 별로 캔버스 요소와 막대 그래프 생성
+        Object.entries(groupedChartData).forEach(([fixtureId, groupedData]) => {
+          const canvas = document.createElement('canvas');
+          canvas.id = `chart-${fixtureId}`;
+          chartContainer.appendChild(canvas);
+
+          const ctx = document.getElementById(`chart-${fixtureId}`).getContext('2d');
+
+          const teamNames = groupedData.map(data => data.teamName); // 팀 이름 배열
+          const backgroundColors = generateBackgroundColors(teamNames, selectedTeam); // 팀 이름과 선택된 팀을 전달하여 색상 생성
+
+          const datasets = groupedData.map((data, index) => ({
+            label: data.teamName,
+            data: [data.value],
+            backgroundColor: backgroundColors[index], // 각 팀에 다른 색상을 지정합니다.
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 1
+          }));
+
+          new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: [`${fixtureId}`], // fixtureId를 라벨로 사용합니다.
+              datasets: datasets
+            },
+            options: {
+              scales: {
+                y: {
+                  beginAtZero: true
+                }
+              }
             }
           });
-        }
+        });
 
-        // 콘솔 출력
-        console.dir(stats);
+        console.log(groupedChartData)
       })
       .catch(error => console.error(error));
   } else {
     alert("팀을 선택해주세요.");
   }
 });
+
+// 팀 이름과 선택된 팀을 비교하여 색상을 생성하는 함수
+function generateBackgroundColors(teamNames, selectedTeam) {
+  const colors = [];
+  const baseColor = [75, 192, 192]; // 기본 색상
+
+  teamNames.forEach(teamName => {
+    const color = teamName === selectedTeam ? [0, 0, 255] : baseColor;
+    colors.push(`rgba(${color[0]}, ${color[1]}, ${color[2]}, 0.2)`);
+  });
+
+  return colors;
+}

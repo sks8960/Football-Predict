@@ -97,14 +97,17 @@ app.get('/teams/:teamName', (req, res) => {
         });
 
         Promise.all(statsPromises)
-        .then((statsArray) => {
-          const allStats = [];
-      
-          statsArray.forEach((stats) => {
-            stats.forEach((item) => {
-              if (item.hasOwnProperty('team') && item.hasOwnProperty('statistics')) {
-                const teamInfo = item.team;
-                const statistics = item.statistics;
+  .then((statsArray) => {
+    const allStats = [];
+
+    statsArray.forEach((stats, index) => {
+      const fixtureId = fixtureIds[index]; // fixtureId 추출
+
+      stats.forEach((item) => {
+        if (item.hasOwnProperty('team') && item.hasOwnProperty('statistics')) {
+          const teamInfo = item.team;
+          const statistics = item.statistics;
+
       
                 const teamName = teamInfo.name; // 팀 이름 가져오기
       
@@ -128,19 +131,19 @@ app.get('/teams/:teamName', (req, res) => {
                   }
                 });
       
-                allStats.push({ teamName, statistics: processedStatistics });
-              } else {
-                console.log('Invalid data:', item);
-              }
-            });
-          });
-      
-          res.json({ stats: allStats });
-        })
-        .catch((error) => {
-          console.error(error);
-          res.status(500).send('Internal server error');
-        });
+                allStats.push({ teamName, statistics: processedStatistics, fixtureId }); // fixtureId 추가
+        } else {
+          console.log('Invalid data:', item);
+        }
+      });
+    });
+
+    res.json({ stats: allStats });
+  })
+  .catch((error) => {
+    console.error(error);
+    res.status(500).send('Internal server error');
+  });
       });
     });
 

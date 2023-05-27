@@ -2,6 +2,7 @@
 <html>
   <head>
     <title>축구 리그와 팀 선택</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   </head>
   <body>
     <div>
@@ -22,8 +23,14 @@
       <button id="getTeamButton">선택</button>
       <ul id="statsList"></ul>
     </div>
-    <div id="chart"></div>
+    <div>
+      <div id="chart-container">
+        <canvas id="chart-1"></canvas>
+        <canvas id="chart-2"></canvas>
+        <canvas id="chart-3"></canvas>
+        <!-- 나머지 fixtureId에 해당하는 차트도 추가 -->
+      </div>
+    </div>
     <script src="SelectName.js"></script>
-    <script src="https://d3js.org/d3.v7.min.js"></script>
   </body>
 </html>
