@@ -152,89 +152,82 @@ getTeamButton.addEventListener("click", function () {
       .then(data => {
         const stats = data.stats;
         console.log(stats);
-        const chartData = [];
+
+        const groupedStats = {};
 
         stats.forEach(item => {
+          const fixtureId = item.fixtureId;
           const teamName = item.teamName;
           const statistics = item.statistics;
 
-          Object.entries(statistics).forEach(([fixtureId, value]) => { // fixtureId를 key로 사용하여 그룹화합니다.
-            chartData.push({ fixtureId, value, teamName });
-          });
-        });
-
-        console.log(chartData);
-
-        const groupedChartData = {};
-
-        chartData.forEach((data) => {
-          const fixtureId = data.fixtureId;
-
-          if (!groupedChartData[fixtureId]) {
-            groupedChartData[fixtureId] = [];
+          if (!groupedStats[fixtureId]) {
+            groupedStats[fixtureId] = [];
           }
 
-          groupedChartData[fixtureId].push({
-            teamName: data.teamName,
-            value: data.value
-          });
+          groupedStats[fixtureId].push({ teamName, statistics });
         });
 
-        const chartContainer = document.getElementById('chart-container');
-        chartContainer.innerHTML = ''; // 기존의 캔버스 요소를 모두 삭제합니다.
+        console.log(groupedStats);
 
-        // groupedChartData에 있는 fixtureId 별로 캔버스 요소와 막대 그래프 생성
-        Object.entries(groupedChartData).forEach(([fixtureId, groupedData]) => {
-          const canvas = document.createElement('canvas');
-          canvas.id = `chart-${fixtureId}`;
-          chartContainer.appendChild(canvas);
+        const tableContainer = document.getElementById('table-container');
+        tableContainer.innerHTML = '';
 
-          const ctx = document.getElementById(`chart-${fixtureId}`).getContext('2d');
+        // groupedStats에 있는 fixtureId 별로 테이블 생성
+        Object.entries(groupedStats).forEach(([fixtureId, fixtureData]) => {
+          const table = document.createElement('table');
+          table.id = `table-${fixtureId}`;
+          table.className = 'fixture-table'; // 테이블에 클래스 추가
+          tableContainer.appendChild(table);
 
-          const teamNames = groupedData.map(data => data.teamName); // 팀 이름 배열
-          const backgroundColors = generateBackgroundColors(teamNames, selectedTeam); // 팀 이름과 선택된 팀을 전달하여 색상 생성
+          const caption = document.createElement('caption');
+          caption.textContent = `Fixture ID ${fixtureId} Statistics`; // 테이블 라벨
+          table.appendChild(caption);
 
-          const datasets = groupedData.map((data, index) => ({
-            label: data.teamName,
-            data: [data.value],
-            backgroundColor: backgroundColors[index], // 각 팀에 다른 색상을 지정합니다.
-            borderColor: 'rgba(75, 192, 192, 1)',
-            borderWidth: 1
-          }));
+          const thead = document.createElement('thead');
+          const headerRow = document.createElement('tr');
+          const teamNameHeader = document.createElement('th');
+          teamNameHeader.textContent = 'Team Name';
+          headerRow.appendChild(teamNameHeader);
 
-          new Chart(ctx, {
-            type: 'bar',
-            data: {
-              labels: [`${fixtureId}`], // fixtureId를 라벨로 사용합니다.
-              datasets: datasets
-            },
-            options: {
-              scales: {
-                y: {
-                  beginAtZero: true
-                }
-              }
+          const valueHeaders = Object.keys(fixtureData[0].statistics).map(key => {
+            const th = document.createElement('th');
+            th.textContent = key;
+            return th;
+          });
+
+          headerRow.append(...valueHeaders);
+          thead.appendChild(headerRow);
+          table.appendChild(thead);
+
+          const tbody = document.createElement('tbody');
+          fixtureData.forEach((data, index) => {
+            const row = document.createElement('tr');
+            const teamNameCell = document.createElement('td');
+            teamNameCell.textContent = data.teamName;
+            row.appendChild(teamNameCell);
+
+            const valueCells = Object.values(data.statistics).map(value => {
+              const td = document.createElement('td');
+              td.textContent = value;
+              return td;
+            });
+
+            row.append(...valueCells);
+            tbody.appendChild(row);
+
+            // 각 항목별로 구분선 추가
+            if (index % 2 === 0) {
+              row.classList.add('even-row'); // 짝수 행에 스타일 클래스 추가
+            } else {
+              row.classList.add('odd-row'); // 홀수 행에 스타일 클래스 추가
             }
           });
-        });
 
-        console.log(groupedChartData)
+          table.appendChild(tbody);
+        });
       })
       .catch(error => console.error(error));
   } else {
     alert("팀을 선택해주세요.");
   }
 });
-
-// 팀 이름과 선택된 팀을 비교하여 색상을 생성하는 함수
-function generateBackgroundColors(teamNames, selectedTeam) {
-  const colors = [];
-  const baseColor = [75, 192, 192]; // 기본 색상
-
-  teamNames.forEach(teamName => {
-    const color = teamName === selectedTeam ? [0, 0, 255] : baseColor;
-    colors.push(`rgba(${color[0]}, ${color[1]}, ${color[2]}, 0.2)`);
-  });
-
-  return colors;
-}
