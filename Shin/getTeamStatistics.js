@@ -40,7 +40,7 @@ app.get('/teams/:teamName', (req, res) => {
       method: 'GET',
       hostname: 'api-football-v1.p.rapidapi.com',
       port: null,
-      path: `/v3/fixtures?season=2022&team=${teamId}&last=5`,
+      path: `/v3/fixtures?season=2022&team=${teamId}&last=6`,
       headers: {
         'x-rapidapi-key': '96e6fbd9e1msh363fb680c23119fp131a0ajsn8edccdfdd332',
         'x-rapidapi-host': 'api-football-v1.p.rapidapi.com',

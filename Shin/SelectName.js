@@ -174,53 +174,47 @@ getTeamButton.addEventListener("click", function () {
 
         // groupedStats에 있는 fixtureId 별로 테이블 생성
         Object.entries(groupedStats).forEach(([fixtureId, fixtureData]) => {
+          const tableContainerDiv = document.createElement('div');
+          tableContainerDiv.className = 'table-container';
+          tableContainer.appendChild(tableContainerDiv);
+
           const table = document.createElement('table');
           table.id = `table-${fixtureId}`;
-          table.className = 'fixture-table'; // 테이블에 클래스 추가
-          tableContainer.appendChild(table);
-
-          const caption = document.createElement('caption');
-          caption.textContent = `Fixture ID ${fixtureId} Statistics`; // 테이블 라벨
-          table.appendChild(caption);
+          table.className = 'fixture-table horizontal'; // 테이블에 클래스 추가
+          tableContainerDiv.appendChild(table);
 
           const thead = document.createElement('thead');
           const headerRow = document.createElement('tr');
           const teamNameHeader = document.createElement('th');
-          teamNameHeader.textContent = 'Team Name';
+          teamNameHeader.textContent = 'Type';
           headerRow.appendChild(teamNameHeader);
 
-          const valueHeaders = Object.keys(fixtureData[0].statistics).map(key => {
+          const teamNameCells = fixtureData.map(data => {
             const th = document.createElement('th');
-            th.textContent = key;
+            th.textContent = data.teamName;
             return th;
           });
 
-          headerRow.append(...valueHeaders);
+          headerRow.append(...teamNameCells);
           thead.appendChild(headerRow);
           table.appendChild(thead);
 
           const tbody = document.createElement('tbody');
-          fixtureData.forEach((data, index) => {
-            const row = document.createElement('tr');
-            const teamNameCell = document.createElement('td');
-            teamNameCell.textContent = data.teamName;
-            row.appendChild(teamNameCell);
 
-            const valueCells = Object.values(data.statistics).map(value => {
-              const td = document.createElement('td');
-              td.textContent = value;
-              return td;
+          // 각 타입별로 데이터 행 생성
+          Object.entries(fixtureData[0].statistics).forEach(([type, _]) => {
+            const row = document.createElement('tr');
+            const typeCell = document.createElement('td');
+            typeCell.textContent = type;
+            row.appendChild(typeCell);
+
+            fixtureData.forEach(data => {
+              const valueCell = document.createElement('td');
+              valueCell.textContent = data.statistics[type];
+              row.appendChild(valueCell);
             });
 
-            row.append(...valueCells);
             tbody.appendChild(row);
-
-            // 각 항목별로 구분선 추가
-            if (index % 2 === 0) {
-              row.classList.add('even-row'); // 짝수 행에 스타일 클래스 추가
-            } else {
-              row.classList.add('odd-row'); // 홀수 행에 스타일 클래스 추가
-            }
           });
 
           table.appendChild(tbody);

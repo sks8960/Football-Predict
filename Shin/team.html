@@ -3,36 +3,61 @@
   <head>
     <title>축구 리그와 팀 선택</title>
     <style>
-      .fixture-table {
-        border-collapse: collapse;
-        width: 100%;
+      .fixture-table.horizontal thead tr th:first-child,
+      .fixture-table.horizontal tbody tr td:first-child {
+        text-align: left;
       }
-    
-      .fixture-table caption {
-        font-weight: bold;
-        margin-bottom: 10px;
-      }
-    
-      .fixture-table th,
-      .fixture-table td {
+
+      .fixture-table.horizontal thead tr th,
+      .fixture-table.horizontal tbody tr td {
+        display: table-cell;
         padding: 8px;
-        text-align: center;
+        border-bottom: 1px solid #ddd;
       }
-    
-      .fixture-table th {
+
+      .fixture-table.horizontal thead tr th {
         background-color: #f2f2f2;
+        font-weight: bold;
       }
-    
-      .even-row {
+
+      .fixture-table.horizontal tbody tr:nth-child(odd) {
         background-color: #f9f9f9;
       }
-    
-      .odd-row {
-        background-color: #ffffff;
-        
+
+      .fixture-table.horizontal tbody tr:hover {
+        background-color: #eaeaea;
       }
+
       table {
         margin-top: 50px;
+      }
+
+      #table-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh; /* 웹 페이지 전체 높이에 맞게 설정 */
+      }
+
+      .fixture-table.horizontal {
+        display: table;
+        margin: 50 auto; /* 가운데 정렬 */
+      }
+
+      .table-container {
+        display: flex;
+        flex-wrap: wrap; /* 테이블을 한 줄에 2개씩 표시하기 위해 필요한 설정 */
+        justify-content: center;
+      }
+
+      .fixture-table {
+        flex: 1;
+        margin: 100px; /* 테이블 사이의 간격을 조절할 수 있습니다. */
+        max-width: 500px; /* 테이블의 최대 너비 설정 */
+      }
+
+      .fixture-table:not(:last-child) {
+        border-right: 1px solid #000; /* 테이블 사이의 수직 구분선 스타일을 설정합니다. */
       }
     </style>
   </head>
@@ -56,7 +81,7 @@
       <ul id="statsList"></ul>
     </div>
     <div>
-      <div id="table-container"></div>
+      <div id="table-container" class="table-container"></div>
     </div>
     <script src="SelectName.js"></script>
   </body>
