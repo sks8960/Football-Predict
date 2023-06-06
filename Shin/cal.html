@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <meta charset='utf-8' />
+    <link href="path/to/fullcalendar.css" rel="stylesheet" />
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
+    <script>
+
+      document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        var currentDate = new Date(); // 현재 날짜와 시간을 가져옵니다.
+
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+          initialView: 'dayGridMonth',
+          initialDate: currentDate, // 현재 날짜로 설정합니다.
+          eventClassNames: [],
+          headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+          },
+          events: function(info, successCallback, failureCallback) {
+            fetch('http://localhost:3000/calendar/calendar')
+              .then(function(response) {
+                return response.json();
+              })
+              .then(function(data) {
+                successCallback(data);
+              })
+              .catch(function(error) {
+                failureCallback(error);
+              });
+          }
+        });
+
+        calendar.render();
+      });
+
+    </script>
+    <style>
+
+
+</style>
+
+  </head>
+  <body>
+    <div id='calendar'></div>
+  </body>
+</html>

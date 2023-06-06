@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const db = require('./db.js');
 const https = require('https');
+const moment = require('moment');
 
 app.use('/', express.static(__dirname + '/Shin', {
   setHeaders: function (res, path, stat) {
@@ -13,7 +14,11 @@ app.use('/', express.static(__dirname + '/Shin', {
   }
 }));
 
-app.get('/', function (req, res) {
+app.get('/calendar', function (req, res) {
+  res.sendFile(__dirname + '/cal.html');
+});
+
+app.get('/team', function (req, res) {
   res.sendFile(__dirname + '/team.html');
 });
 
@@ -40,7 +45,7 @@ app.get('/teams/:teamName', (req, res) => {
       method: 'GET',
       hostname: 'api-football-v1.p.rapidapi.com',
       port: null,
-      path: `/v3/fixtures?season=2022&team=${teamId}&last=6`,
+      path: `/v3/fixtures?season=${moment().year()}&team=${teamId}&last=6`,
       headers: {
         'x-rapidapi-key': '96e6fbd9e1msh363fb680c23119fp131a0ajsn8edccdfdd332',
         'x-rapidapi-host': 'api-football-v1.p.rapidapi.com',
@@ -87,8 +92,6 @@ app.get('/teams/:teamName', (req, res) => {
                 const body2 = Buffer.concat(chunks2);
                 const stats = JSON.parse(body2.toString()).response;
                 resolve(stats);
-                
-                
               });
             });
 
@@ -97,59 +100,142 @@ app.get('/teams/:teamName', (req, res) => {
         });
 
         Promise.all(statsPromises)
-  .then((statsArray) => {
-    const allStats = [];
+          .then((statsArray) => {
+            const allStats = [];
 
-    statsArray.forEach((stats, index) => {
-      const fixtureId = fixtureIds[index]; // fixtureId 추출
+            statsArray.forEach((stats, index) => {
+              const fixtureId = fixtureIds[index]; // fixtureId 추출
 
-      stats.forEach((item) => {
-        if (item.hasOwnProperty('team') && item.hasOwnProperty('statistics')) {
-          const teamInfo = item.team;
-          const statistics = item.statistics;
+              stats.forEach((item) => {
+                if (item.hasOwnProperty('team') && item.hasOwnProperty('statistics')) {
+                  const teamInfo = item.team;
+                  const statistics = item.statistics;
 
-      
-                const teamName = teamInfo.name; // 팀 이름 가져오기
-      
-                console.log('Team Name:', teamName);
-                console.log('Statistics:', statistics);
-      
-                // 값 중에서 null인 경우 0으로 바꾸고 % 문자가 있다면 제거
-                const processedStatistics = {};
-      
-                statistics.forEach((stat) => {
-                  if (stat.hasOwnProperty('type') && stat.hasOwnProperty('value')) {
-                    let processedValue = stat.value;
-      
-                    if (processedValue === null) {
-                      processedValue = 0;
-                    } else if (typeof processedValue === 'string' && processedValue.includes('%')) {
-                      processedValue = parseFloat(processedValue.replace('%', ''));
+                  const teamName = teamInfo.name; // 팀 이름 가져오기
+
+                  console.log('Team Name:', teamName);
+                  console.log('Statistics:', statistics);
+
+                  // 값 중에서 null인 경우 0으로 바꾸고 % 문자가 있다면 제거
+                  const processedStatistics = {};
+
+                  statistics.forEach((stat) => {
+                    if (stat.hasOwnProperty('type') && stat.hasOwnProperty('value')) {
+                      let processedValue = stat.value;
+
+                      if (processedValue === null) {
+                        processedValue = 0;
+                      } else if (typeof processedValue === 'string' && processedValue.includes('%')) {
+                        processedValue = parseFloat(processedValue.replace('%', ''));
+                      }
+
+                      processedStatistics[stat.type] = processedValue;
                     }
-      
-                    processedStatistics[stat.type] = processedValue;
-                  }
-                });
-      
-                allStats.push({ teamName, statistics: processedStatistics, fixtureId }); // fixtureId 추가
-        } else {
-          console.log('Invalid data:', item);
-        }
-      });
-    });
+                  });
 
-    res.json({ stats: allStats });
-  })
-  .catch((error) => {
-    console.error(error);
-    res.status(500).send('Internal server error');
-  });
+                  allStats.push({ teamName, statistics: processedStatistics, fixtureId }); // fixtureId 추가
+                } else {
+                  console.log('Invalid data:', item);
+                }
+              });
+            });
+
+            res.json({ stats: allStats });
+          })
+          .catch((error) => {
+            console.error(error);
+            res.status(500).send('Internal server error');
+          });
       });
     });
 
     req.end();
   });
 });
+
+// 다음 달 구하기
+function getNextMonth() {
+  return moment().add(1, 'month').format('YYYY-MM');
+}
+
+// 이전 달 구하기
+function getPrevMonth() {
+  return moment().subtract(1, 'month').format('YYYY-MM');
+}
+
+app.get('/calendar/calendar', (req, res) => {
+  const options = {
+    method: 'GET',
+    hostname: 'api-football-v1.p.rapidapi.com',
+    port: null,
+    path: '/v3/fixtures?league=39&season=2022',
+    headers: {
+      'x-rapidapi-key': '96e6fbd9e1msh363fb680c23119fp131a0ajsn8edccdfdd332',
+      'x-rapidapi-host': 'api-football-v1.p.rapidapi.com',
+      useQueryString: true,
+    },
+  };
+
+  const req3 = https.request(options, function (response) {
+    const chunks = [];
+
+    response.on('data', function (chunk) {
+      chunks.push(chunk);
+    });
+
+    response.on('end', function () {
+      const body = Buffer.concat(chunks);
+      const fixtures = JSON.parse(body.toString()).response;
+
+      const events = fixtures.map((fixture) => ({
+        title: `${fixture.teams.home.name} vs ${fixture.teams.away.name}`,
+        start: moment.utc(fixture.fixture.date).format(),
+        end: moment.utc(fixture.fixture.date).format(), // start와 동일한 시간으로 설정
+      }));
+
+      res.json(events);
+    });
+  });
+
+  req3.end();
+});
+app.get('/calendar/calendar', (req, res) => {
+  const options = {
+    method: 'GET',
+    hostname: 'api-football-v1.p.rapidapi.com',
+    port: null,
+    path: '/v3/fixtures?league=&season=2022',
+    headers: {
+      'x-rapidapi-key': '96e6fbd9e1msh363fb680c23119fp131a0ajsn8edccdfdd332',
+      'x-rapidapi-host': 'api-football-v1.p.rapidapi.com',
+      useQueryString: true,
+    },
+  };
+
+  const req3 = https.request(options, function (response) {
+    const chunks = [];
+
+    response.on('data', function (chunk) {
+      chunks.push(chunk);
+    });
+
+    response.on('end', function () {
+      const body = Buffer.concat(chunks);
+      const fixtures = JSON.parse(body.toString()).response;
+
+      const events = fixtures.map((fixture) => ({
+        title: `${fixture.teams.home.name} vs ${fixture.teams.away.name}`,
+        start: moment.utc(fixture.fixture.date).format(),
+        end: moment.utc(fixture.fixture.date).format(), // start와 동일한 시간으로 설정
+      }));
+
+      res.json(events);
+    });
+  });
+
+  req3.end();
+});
+
 
 app.listen(3000, () => {
   console.log('Server running on port 3000');
