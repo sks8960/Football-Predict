@@ -14,8 +14,24 @@ app.use('/', express.static(__dirname + '/Shin', {
   }
 }));
 
-app.get('/calendar', function (req, res) {
-  res.sendFile(__dirname + '/cal.html');
+app.get('/cal/epl', function (req, res) {
+  res.sendFile(__dirname + '/calepl.html');
+});
+
+app.get('/cal/laliga', function (req, res) {
+  res.sendFile(__dirname + '/callaliga.html');
+});
+
+app.get('/cal/ligue1', function (req, res) {
+  res.sendFile(__dirname + '/calligue1.html');
+});
+
+app.get('/cal/seriea', function (req, res) {
+  res.sendFile(__dirname + '/calseriea.html');
+});
+
+app.get('/cal/bundesliga', function (req, res) {
+  res.sendFile(__dirname + '/calbundesliga.html');
 });
 
 app.get('/team', function (req, res) {
@@ -163,12 +179,12 @@ function getPrevMonth() {
   return moment().subtract(1, 'month').format('YYYY-MM');
 }
 
-app.get('/calendar/calendar', (req, res) => {
+app.get('/cal/cal/epl', (req, res) => {
   const options = {
     method: 'GET',
     hostname: 'api-football-v1.p.rapidapi.com',
     port: null,
-    path: '/v3/fixtures?league=39&season=2022',
+    path: '/v3/fixtures?league=39&season=2022', // EPL의 리그 ID인 39로 수정
     headers: {
       'x-rapidapi-key': '96e6fbd9e1msh363fb680c23119fp131a0ajsn8edccdfdd332',
       'x-rapidapi-host': 'api-football-v1.p.rapidapi.com',
@@ -190,7 +206,7 @@ app.get('/calendar/calendar', (req, res) => {
       const events = fixtures.map((fixture) => ({
         title: `${fixture.teams.home.name} vs ${fixture.teams.away.name}`,
         start: moment.utc(fixture.fixture.date).format(),
-        end: moment.utc(fixture.fixture.date).format(), // start와 동일한 시간으로 설정
+        end: moment.utc(fixture.fixture.date).format(),
       }));
 
       res.json(events);
@@ -199,12 +215,14 @@ app.get('/calendar/calendar', (req, res) => {
 
   req3.end();
 });
-app.get('/calendar/calendar', (req, res) => {
+
+
+app.get('/cal/cal/laliga', function (req, res) {
   const options = {
     method: 'GET',
     hostname: 'api-football-v1.p.rapidapi.com',
     port: null,
-    path: '/v3/fixtures?league=&season=2022',
+    path: '/v3/fixtures?league=140&season=2022',
     headers: {
       'x-rapidapi-key': '96e6fbd9e1msh363fb680c23119fp131a0ajsn8edccdfdd332',
       'x-rapidapi-host': 'api-football-v1.p.rapidapi.com',
@@ -212,7 +230,7 @@ app.get('/calendar/calendar', (req, res) => {
     },
   };
 
-  const req3 = https.request(options, function (response) {
+  const req4 = https.request(options, function (response) {
     const chunks = [];
 
     response.on('data', function (chunk) {
@@ -226,14 +244,125 @@ app.get('/calendar/calendar', (req, res) => {
       const events = fixtures.map((fixture) => ({
         title: `${fixture.teams.home.name} vs ${fixture.teams.away.name}`,
         start: moment.utc(fixture.fixture.date).format(),
-        end: moment.utc(fixture.fixture.date).format(), // start와 동일한 시간으로 설정
+        end: moment.utc(fixture.fixture.date).format(),
+      }));
+
+      res.json(events); // JSON 형식으로 데이터를 전송합니다.
+    });
+  });
+
+  req4.end();
+});
+
+app.get('/cal/cal/ligue1', (req, res) => {
+  const options = {
+    method: 'GET',
+    hostname: 'api-football-v1.p.rapidapi.com',
+    port: null,
+    path: '/v3/fixtures?league=61&season=2022', // Ligue1의 리그 ID인 61로 수정
+    headers: {
+      'x-rapidapi-key': '96e6fbd9e1msh363fb680c23119fp131a0ajsn8edccdfdd332',
+      'x-rapidapi-host': 'api-football-v1.p.rapidapi.com',
+      useQueryString: true,
+    },
+  };
+
+  const req5 = https.request(options, function (response) {
+    const chunks = [];
+
+    response.on('data', function (chunk) {
+      chunks.push(chunk);
+    });
+
+    response.on('end', function () {
+      const body = Buffer.concat(chunks);
+      const fixtures = JSON.parse(body.toString()).response;
+
+      const events = fixtures.map((fixture) => ({
+        title: `${fixture.teams.home.name} vs ${fixture.teams.away.name}`,
+        start: moment.utc(fixture.fixture.date).format(),
+        end: moment.utc(fixture.fixture.date).format(),
       }));
 
       res.json(events);
     });
   });
 
-  req3.end();
+  req5.end();
+});
+
+app.get('/cal/cal/seriea', (req, res) => {
+  const options = {
+    method: 'GET',
+    hostname: 'api-football-v1.p.rapidapi.com',
+    port: null,
+    path: '/v3/fixtures?league=135&season=2022', // SerieA의 리그 ID인 135로 수정
+    headers: {
+      'x-rapidapi-key': '96e6fbd9e1msh363fb680c23119fp131a0ajsn8edccdfdd332',
+      'x-rapidapi-host': 'api-football-v1.p.rapidapi.com',
+      useQueryString: true,
+    },
+  };
+
+  const req6 = https.request(options, function (response) {
+    const chunks = [];
+
+    response.on('data', function (chunk) {
+      chunks.push(chunk);
+    });
+
+    response.on('end', function () {
+      const body = Buffer.concat(chunks);
+      const fixtures = JSON.parse(body.toString()).response;
+
+      const events = fixtures.map((fixture) => ({
+        title: `${fixture.teams.home.name} vs ${fixture.teams.away.name}`,
+        start: moment.utc(fixture.fixture.date).format(),
+        end: moment.utc(fixture.fixture.date).format(),
+      }));
+
+      res.json(events);
+    });
+  });
+
+  req6.end();
+});
+
+app.get('/cal/cal/bundesliga', (req, res) => {
+  const options = {
+    method: 'GET',
+    hostname: 'api-football-v1.p.rapidapi.com',
+    port: null,
+    path: '/v3/fixtures?league=78&season=2022', // Bundesliga의 리그 ID인 78로 수정
+    headers: {
+      'x-rapidapi-key': '96e6fbd9e1msh363fb680c23119fp131a0ajsn8edccdfdd332',
+      'x-rapidapi-host': 'api-football-v1.p.rapidapi.com',
+      useQueryString: true,
+    },
+  };
+
+  const req6 = https.request(options, function (response) {
+    const chunks = [];
+
+    response.on('data', function (chunk) {
+      chunks.push(chunk);
+    });
+
+    response.on('end', function () {
+      const body = Buffer.concat(chunks);
+      const fixtures = JSON.parse(body.toString()).response;
+
+      const events = fixtures.map((fixture) => ({
+        title: `${fixture.teams.home.name} vs ${fixture.teams.away.name}`,
+        start: moment.utc(fixture.fixture.date).format(),
+        end: moment.utc(fixture.fixture.date).format(),
+      }));
+
+      res.json(events);
+    });
+  });
+
+  req6.end();
 });
 
 

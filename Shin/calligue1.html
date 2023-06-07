@@ -2,7 +2,6 @@
 <html lang='en'>
   <head>
     <meta charset='utf-8' />
-    <link href="path/to/fullcalendar.css" rel="stylesheet" />
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
     <script>
 
@@ -20,7 +19,7 @@
             right: 'dayGridMonth,timeGridWeek,timeGridDay'
           },
           events: function(info, successCallback, failureCallback) {
-            fetch('http://localhost:3000/calendar/calendar')
+            fetch('http://localhost:3000/cal/cal/ligue1')
               .then(function(response) {
                 return response.json();
               })
