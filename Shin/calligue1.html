@@ -2,21 +2,71 @@
 <html lang='en'>
   <head>
     <meta charset='utf-8' />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tippy.js@6.3.5/dist/tippy.css" />
+    <script src="https://unpkg.com/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
+    <script src='https://unpkg.com/@popperjs/core@2.11.6/dist/umd/popper.min.js'></script>
+    <script src='https://unpkg.com/tippy.js@6.3.5/dist/tippy.umd.js'></script> <!-- Tippy.js 라이브러리 추가 -->
     <script>
-
       document.addEventListener('DOMContentLoaded', function() {
         var calendarEl = document.getElementById('calendar');
-        var currentDate = new Date(); // 현재 날짜와 시간을 가져옵니다.
+        var currentDate = new Date();
 
         var calendar = new FullCalendar.Calendar(calendarEl, {
           initialView: 'dayGridMonth',
-          initialDate: currentDate, // 현재 날짜로 설정합니다.
+          initialDate: currentDate,
           eventClassNames: [],
           headerToolbar: {
             left: 'prev,next today',
             center: 'title',
             right: 'dayGridMonth,timeGridWeek,timeGridDay'
+          },
+          eventDidMount: function(info) {
+            var eventElement = info.el;
+            var eventDate = info.event.start;
+
+            if (eventElement.innerText.length > 10) {
+              tippy(eventElement, {
+                content: eventElement.innerText,
+                placement: 'top',
+                maxWidth: 200
+              });
+            }
+
+            eventElement.addEventListener('click', function() {
+              var today = new Date();
+              var fixtureId = info.event.extendedProps.fixtureId;
+
+// 경기 클릭 시 서버에 fixtureId 저장 요청
+fetch('http://localhost:3000/save-fixture', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({ fixtureId: fixtureId })
+})
+  .then(function(response) {
+    if (response.ok) {
+      savedFixtureId = fixtureId;
+      console.log('FixtureId 저장 성공');
+      console.log(savedFixtureId);
+    } else {
+      console.log('FixtureId 저장 실패');
+    }
+  })
+  .catch(function(error) {
+    console.log(error);
+  });
+              if (eventDate < today) {
+                // 이미 경기가 치뤄진 경우 통계 데이터를 작은 팝업 창에서 보여줌
+                var statsPopup = window.open('http://localhost:3000/cal/statistics', '_blank', 'width=600,height=400');
+                statsPopup.focus();
+              } else {
+                // 경기가 아직 치뤄지지 않은 경우 승부 예측 결과를 작은 팝업 창에서 보여줌
+                var predictionPopup = window.open('https://example.com/prediction', '_blank', 'width=600,height=400');
+                predictionPopup.focus();
+              }
+            });
           },
           events: function(info, successCallback, failureCallback) {
             fetch('http://localhost:3000/cal/cal/ligue1')
@@ -34,13 +84,11 @@
 
         calendar.render();
       });
-
     </script>
+
     <style>
 
-
-</style>
-
+    </style>
   </head>
   <body>
     <div id='calendar'></div>

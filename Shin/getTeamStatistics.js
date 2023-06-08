@@ -3,6 +3,7 @@ const app = express();
 const db = require('./db.js');
 const https = require('https');
 const moment = require('moment');
+const bodyParser = require('body-parser');
 
 app.use('/', express.static(__dirname + '/Shin', {
   setHeaders: function (res, path, stat) {
@@ -38,9 +39,34 @@ app.get('/team', function (req, res) {
   res.sendFile(__dirname + '/team.html');
 });
 
+app.get('/cal/statistics', function (req, res) {
+  res.sendFile(__dirname + '/calStatistics.html');
+});
+
 app.get('/SelectName.js', function (req, res) {
   res.sendFile(__dirname + '/SelectName.js');
 });
+
+// Body-parser 미들웨어 사용
+app.use(bodyParser.json());
+
+// fixtureId를 저장할 변수
+let savedFixtureId = null;
+
+// fixtureId 저장 엔드포인트
+app.post('/save-fixture', (req, res) => {
+  const { fixtureId } = req.body;
+  savedFixtureId = fixtureId;
+  res.sendStatus(200);
+});
+
+// fixtureId 가져오기 엔드포인트
+app.get('/get-fixture', (req, res) => {
+  res.json({ fixtureId: savedFixtureId });
+});
+
+
+
 
 // 특정 팀 정보를 조회하는 라우트
 app.get('/teams/:teamName', (req, res) => {
@@ -61,7 +87,7 @@ app.get('/teams/:teamName', (req, res) => {
       method: 'GET',
       hostname: 'api-football-v1.p.rapidapi.com',
       port: null,
-      path: `/v3/fixtures?season=${moment().year()}&team=${teamId}&last=6`,
+      path: `/v3/fixtures?season=2022&team=${teamId}&last=6`,
       headers: {
         'x-rapidapi-key': '96e6fbd9e1msh363fb680c23119fp131a0ajsn8edccdfdd332',
         'x-rapidapi-host': 'api-football-v1.p.rapidapi.com',
@@ -207,6 +233,7 @@ app.get('/cal/cal/epl', (req, res) => {
         title: `${fixture.teams.home.name} vs ${fixture.teams.away.name}`,
         start: moment.utc(fixture.fixture.date).format(),
         end: moment.utc(fixture.fixture.date).format(),
+        fixtureId: fixture.fixture.id, // fixtureId 값을 추가합니다.
       }));
 
       res.json(events);
@@ -215,6 +242,75 @@ app.get('/cal/cal/epl', (req, res) => {
 
   req3.end();
 });
+
+app.get('/cal/stats/:fixtureId', (req, res) => {
+  const fixtureId = req.params.fixtureId;
+  console.log('Fixture ID:', fixtureId);
+
+  const options = {
+    method: 'GET',
+    hostname: 'api-football-v1.p.rapidapi.com',
+    port: null,
+    path: `/v3/fixtures/statistics?fixture=${fixtureId}`,
+    headers: {
+      'x-rapidapi-key': '96e6fbd9e1msh363fb680c23119fp131a0ajsn8edccdfdd332',
+      'x-rapidapi-host': 'api-football-v1.p.rapidapi.com',
+      useQueryString: true,
+    },
+  };
+
+  const req4 = https.request(options, function(response) {
+    const chunks = [];
+
+    response.on('data', function(chunk) {
+      chunks.push(chunk);
+    });
+
+    response.on('end', function() {
+      const body = Buffer.concat(chunks);
+      const responseData = JSON.parse(body.toString()).response;
+
+      const stats = {};
+
+      responseData.forEach(item => {
+        const teamName = item.team.name;
+        const statistics = item.statistics.map(statistic => ({
+          type: statistic.type,
+          value: statistic.value !== null ? statistic.value : 0,
+        }));
+
+        if (!stats[teamName]) {
+          stats[teamName] = {
+            teamName,
+            statistics,
+          };
+        } else {
+          stats[teamName].statistics = stats[teamName].statistics.concat(statistics);
+        }
+      });
+
+      const statsArray = Object.values(stats);
+
+      console.log(statsArray); // 팀 이름과 통계 값만 출력
+
+      // 통계 데이터를 클라이언트에 전송
+      res.json(statsArray);
+    });
+  });
+
+  req4.end();
+
+  req4.on('error', function(error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'An error occurred while fetching statistics' });
+  });
+});
+
+
+
+
+
+
 
 
 app.get('/cal/cal/laliga', function (req, res) {
@@ -245,9 +341,10 @@ app.get('/cal/cal/laliga', function (req, res) {
         title: `${fixture.teams.home.name} vs ${fixture.teams.away.name}`,
         start: moment.utc(fixture.fixture.date).format(),
         end: moment.utc(fixture.fixture.date).format(),
+        fixtureId: fixture.fixture.id, // fixtureId 값을 추가합니다.
       }));
 
-      res.json(events); // JSON 형식으로 데이터를 전송합니다.
+      res.json(events);
     });
   });
 
@@ -282,6 +379,7 @@ app.get('/cal/cal/ligue1', (req, res) => {
         title: `${fixture.teams.home.name} vs ${fixture.teams.away.name}`,
         start: moment.utc(fixture.fixture.date).format(),
         end: moment.utc(fixture.fixture.date).format(),
+        fixtureId: fixture.fixture.id, // fixtureId 값을 추가합니다.
       }));
 
       res.json(events);
@@ -319,6 +417,7 @@ app.get('/cal/cal/seriea', (req, res) => {
         title: `${fixture.teams.home.name} vs ${fixture.teams.away.name}`,
         start: moment.utc(fixture.fixture.date).format(),
         end: moment.utc(fixture.fixture.date).format(),
+        fixtureId: fixture.fixture.id, // fixtureId 값을 추가합니다.
       }));
 
       res.json(events);
@@ -356,6 +455,7 @@ app.get('/cal/cal/bundesliga', (req, res) => {
         title: `${fixture.teams.home.name} vs ${fixture.teams.away.name}`,
         start: moment.utc(fixture.fixture.date).format(),
         end: moment.utc(fixture.fixture.date).format(),
+        fixtureId: fixture.fixture.id, // fixtureId 값을 추가합니다.
       }));
 
       res.json(events);

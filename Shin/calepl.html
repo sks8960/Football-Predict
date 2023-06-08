@@ -35,9 +35,31 @@
 
             eventElement.addEventListener('click', function() {
               var today = new Date();
+              var fixtureId = info.event.extendedProps.fixtureId;
+
+// 경기 클릭 시 서버에 fixtureId 저장 요청
+fetch('http://localhost:3000/save-fixture', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({ fixtureId: fixtureId })
+})
+  .then(function(response) {
+    if (response.ok) {
+      savedFixtureId = fixtureId;
+      console.log('FixtureId 저장 성공');
+      console.log(savedFixtureId);
+    } else {
+      console.log('FixtureId 저장 실패');
+    }
+  })
+  .catch(function(error) {
+    console.log(error);
+  });
               if (eventDate < today) {
                 // 이미 경기가 치뤄진 경우 통계 데이터를 작은 팝업 창에서 보여줌
-                var statsPopup = window.open('https://example.com/statistics', '_blank', 'width=600,height=400');
+                var statsPopup = window.open('http://localhost:3000/cal/statistics', '_blank', 'width=600,height=400');
                 statsPopup.focus();
               } else {
                 // 경기가 아직 치뤄지지 않은 경우 승부 예측 결과를 작은 팝업 창에서 보여줌
