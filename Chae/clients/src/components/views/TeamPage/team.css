@@ -1,0 +1,55 @@
+.fixture-table.horizontal thead tr th:first-child,
+.fixture-table.horizontal tbody tr td:first-child {
+    text-align: left;
+}
+
+.fixture-table.horizontal thead tr th,
+.fixture-table.horizontal tbody tr td {
+    display: table-cell;
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+}
+
+.fixture-table.horizontal thead tr th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.fixture-table.horizontal tbody tr:nth-child(odd) {
+    background-color: #f9f9f9;
+}
+
+.fixture-table.horizontal tbody tr:hover {
+    background-color: #eaeaea;
+}
+
+table {
+    margin-top: 50px;
+}
+
+#table-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    /* 웹 페이지 전체 높이에 맞게 설정 */
+}
+
+.fixture-table.horizontal {
+    display: table;
+    margin: 50 auto;
+    /* 가운데 정렬 */
+}
+
+.fixture-table-container {
+    flex: 1;
+    margin: 70px;
+    /* 테이블 사이의 간격을 조절할 수 있습니다. */
+    max-width: 500px;
+    /* 테이블의 최대 너비 설정 */
+}
+
+.fixture-table-container:not(:last-child) {
+    border-right: 1px solid #000;
+    /* 테이블 사이의 수직 구분선 스타일을 설정합니다. */
+}

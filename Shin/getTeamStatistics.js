@@ -259,14 +259,14 @@ app.get('/cal/stats/:fixtureId', (req, res) => {
     },
   };
 
-  const req4 = https.request(options, function(response) {
+  const req4 = https.request(options, function (response) {
     const chunks = [];
 
-    response.on('data', function(chunk) {
+    response.on('data', function (chunk) {
       chunks.push(chunk);
     });
 
-    response.on('end', function() {
+    response.on('end', function () {
       const body = Buffer.concat(chunks);
       const responseData = JSON.parse(body.toString()).response;
 
@@ -300,7 +300,7 @@ app.get('/cal/stats/:fixtureId', (req, res) => {
 
   req4.end();
 
-  req4.on('error', function(error) {
+  req4.on('error', function (error) {
     console.error('Error:', error);
     res.status(500).json({ error: 'An error occurred while fetching statistics' });
   });
@@ -466,6 +466,6 @@ app.get('/cal/cal/bundesliga', (req, res) => {
 });
 
 
-app.listen(3000, () => {
-  console.log('Server running on port 3000');
+app.listen(4000, () => {
+  console.log('Server running on port 4000');
 });

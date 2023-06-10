@@ -1,0 +1,39 @@
+.post-card {
+  border: 1px solid #ccc;
+  padding: 20px;
+  background-color: #f9f9f9;
+  display: grid;
+  grid-template-columns: 1fr auto;
+}
+
+.post-title {
+  grid-column: 1;
+}
+
+.post-time {
+  grid-column: 2;
+  text-align: right;
+}
+
+.post-content {
+  grid-column: 1 / span 2;
+}
+
+.post-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.post-container h1 {
+  margin-right: 10px;
+}
+
+.post-container button {
+  margin-left: 10px;
+}
+
+.post-create-button-container {
+  margin-left: auto;
+}

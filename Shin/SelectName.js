@@ -97,7 +97,7 @@ leagueSelect.addEventListener("change", function () {
         "FC Schalke 04",
         "VfL BOCHUM",
         "Union Berlin",
-        "FC Koln",        
+        "FC Koln",
       ]);
       break;
     case "ligue1":
@@ -147,7 +147,7 @@ getTeamButton.addEventListener("click", function () {
     alert("선택된 팀은 " + selectedTeam + "입니다.");
 
     // REST API를 호출합니다.
-    fetch(`http://localhost:3000/teams/${selectedTeam}`)
+    fetch(`http://localhost:4000/teams/${selectedTeam}`)
       .then(response => response.json())
       .then(data => {
         const stats = data.stats;

@@ -1,0 +1,51 @@
+.post-card-1 {
+    border: 1px solid #ccc;
+    padding: 20px;
+    background-color: #f9f9f9;
+    display: grid;
+    grid-template-columns: 1fr auto;
+}
+
+.post-title-1 {
+    grid-column: 1;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.post-title-1::after {
+    content: "";
+    display: block;
+    width: 50%;
+    margin: 0 auto;
+    border-bottom: 2px solid #ccc;
+    margin-top: 10px;
+}
+
+.post-content-1 {
+    font-size: 16px;
+    line-height: 1.5;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.post-time-1 {
+    font-size: 12px;
+    color: #888;
+}
+
+.post-buttons-1 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.like-button-1,
+.dislike-button-1 {
+    margin: 5px;
+}
+
+.vote-count-1 {
+    margin: 0 5px;
+}
