@@ -16,6 +16,8 @@ import CalLigue1 from './components/views/callender/CalLigue1';
 import CalSeriea from './components/views/callender/CalSeriea';
 import CalBundesliga from './components/views/callender/CalBundesliga';
 import Team from './components/views/TeamPage/Team';
+import ChatRoomPage from './components/views/ChatPage/ChatRoomPage';
+import Chat from "./components/views/ChatPage/Chat"
 function App() {
   return (
     <div>
@@ -27,7 +29,8 @@ function App() {
         <Route path="/post" element={<PostListPage1 />} />
         <Route path="/post/create" element={<PostCreatePage />} /> // Add the route for PostCreatePage
         <Route path="/post/:id" element={<Post1 />} />
-        <Route exact path='/chat' element={<ChatPage />} />
+        <Route path='/chat' element={<Chat />} />
+        <Route exact path="/chat/:roomId" component={ChatRoomPage} />
         <Route exact path='/cal/epl' element={<CalEpl />} />
         <Route exact path='/cal/laliga' element={<CalLaliga />} />
         <Route exact path='/cal/ligue1' element={<CalLigue1 />} />

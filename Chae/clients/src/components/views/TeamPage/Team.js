@@ -141,35 +141,35 @@ const Team = () => {
         setTeam(event.target.value);
     };
 
-    const handleGetTeamStats = () => {
+    const handleGetTeamStats = async () => {
         if (team !== "") {
             alert("선택된 팀은 " + team + "입니다.");
 
-            // REST API를 호출합니다.
-            fetch(`http://localhost:5000/teams/${team}`)
-                .then(response => response.json())
-                .then(data => {
-                    const stats = data.stats;
-                    console.log(stats);
+            try {
+                const response = await fetch(`http://localhost:5000/teams/${team}`);
+                const data = await response.json();
+                const stats = data.stats;
+                console.log(stats);
 
-                    const groupedStats = {};
+                const groupedStats = {};
 
-                    stats.forEach(item => {
-                        const fixtureId = item.fixtureId;
-                        const teamName = item.teamName;
-                        const statistics = item.statistics;
+                stats.forEach(item => {
+                    const fixtureId = item.fixtureId;
+                    const teamName = item.teamName;
+                    const statistics = item.statistics;
 
-                        if (!groupedStats[fixtureId]) {
-                            groupedStats[fixtureId] = [];
-                        }
+                    if (!groupedStats[fixtureId]) {
+                        groupedStats[fixtureId] = [];
+                    }
 
-                        groupedStats[fixtureId].push({ teamName, statistics });
-                    });
+                    groupedStats[fixtureId].push({ teamName, statistics });
+                });
 
-                    console.log(groupedStats);
-                    setGroupedStats(groupedStats);
-                })
-                .catch(error => console.error(error));
+                console.log(groupedStats);
+                setGroupedStats(groupedStats);
+            } catch (error) {
+                console.error(error);
+            }
         } else {
             alert("팀을 선택해주세요.");
         }

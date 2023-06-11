@@ -2,15 +2,20 @@ const express = require('express');
 const app = express();
 const port = 5000;
 const https = require('https');
+const http = require('http');
 const axios = require('axios');
 const db = require('./db.js');
 const moment = require('moment');
 const cors = require('cors');
 const { User } = require('./models/User');
 const { Post } = require('./models/Post');
+const { Room } = require('./models/Room.js');
 const bodyParser = require('body-parser');
 const coockieParser = require('cookie-parser');
 const { auth } = require('./middleware/auth');
+const socket = require("socket.io");
+const { Server } = require('socket.io');
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(coockieParser());
@@ -33,6 +38,14 @@ app.use(cors({
     credentials: true
 }));
 
+const server = http.createServer(app);
+// const io = socket(server);
+const io = new Server(server, {
+    cors: {
+        origin: '*',
+        methods: ['GET', 'POST']
+    }
+})
 
 
 app.get('/', (req, res) => res.send("hello World!!!"))
@@ -575,4 +588,183 @@ app.get('/teams/:teamName', (req, res) => {
         req.end();
     });
 });
-app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+
+// =====================================================
+
+// let roomList = [];
+
+// // 방 생성 및 방 목록 가져오기
+// app.post('/api/chat/createRoom', (req, res) => {
+//     const { roomName } = req.body;
+
+//     // 방 이름 중복 체크
+//     const existingRoom = roomList.find((room) => room.name === roomName);
+//     if (existingRoom) {
+//         return res.json({ success: false, message: '이미 존재하는 방 이름입니다.' });
+//     }
+
+//     // 새로운 방 객체 생성
+//     const newRoom = {
+//         id: Date.now().toString(),
+//         name: roomName,
+//         users: [],
+//     };
+
+//     // 방 목록에 추가
+//     roomList.push(newRoom);
+
+//     // 클라이언트에게 방 목록 전달
+//     io.emit('roomListUpdated', { roomList });
+
+//     return res.json({ success: true, message: '방 생성 성공', roomList });
+// });
+
+// app.get('/api/chat/rooms', (req, res) => {
+//     const roomListWithUsersCount = roomList.map((room) => ({
+//         ...room,
+//         usersCount: room.users.length,
+//     }));
+
+//     return res.json({ roomList: roomListWithUsersCount });
+// });
+
+// // Socket.IO 연결 및 이벤트 처리
+// io.on('connection', (socket) => {
+//     console.log('새로운 사용자가 연결되었습니다.');
+
+//     // 클라이언트에게 초기 방 목록 전송
+//     socket.emit('roomListUpdated', { roomList });
+
+//     // 사용자가 방에 입장하는 이벤트 처리
+//     socket.on('enterRoom', (roomId, userName) => {
+//         // 방 ID에 해당하는 방 찾기
+//         const room = roomList.find((room) => room.id === roomId);
+
+//         if (room) {
+//             // 사용자 정보 저장
+//             room.users.push(userName);
+
+//             // 클라이언트에게 방 입장 완료 이벤트 전송
+//             socket.emit('enterRoomSuccess', room);
+//             socket.broadcast.emit('userEnteredRoom', room);
+
+//             // 방 목록 업데이트
+//             const roomListWithUpdatedUsersCount = roomList.map((room) => ({
+//                 ...room,
+//                 usersCount: room.users.length,
+//             }));
+//             io.emit('roomListUpdated', { roomList: roomListWithUpdatedUsersCount });
+//         } else {
+//             // 방이 존재하지 않을 경우 에러 이벤트 전송
+//             socket.emit('enterRoomError', '방이 존재하지 않습니다.');
+//         }
+//     });
+
+//     // 사용자가 방에서 나가는 이벤트 처리
+//     socket.on('leaveRoom', (roomId, userName) => {
+//         // 방 ID에 해당하는 방 찾기
+//         const room = roomList.find((room) => room.id === roomId);
+
+//         if (room) {
+//             // 사용자 정보 제거
+//             const userIndex = room.users.indexOf(userName);
+//             if (userIndex !== -1) {
+//                 room.users.splice(userIndex, 1);
+
+//                 // 클라이언트에게 사용자가 방에서 나갔음을 알림
+//                 socket.broadcast.emit('userLeftRoom', room);
+
+//                 // 방 목록 업데이트
+//                 const roomListWithUpdatedUsersCount = roomList.map((room) => ({
+//                     ...room,
+//                     usersCount: room.users.length,
+//                 }));
+//                 io.emit('roomListUpdated', { roomList: roomListWithUpdatedUsersCount });
+//             }
+//         }
+//     });
+
+//     // 연결 종료 시 처리
+//     socket.on('disconnect', () => {
+//         console.log('사용자 연결이 종료되었습니다.');
+//     });
+// });
+const rooms = {};
+var count = 0;
+
+const publicRooms = () => {
+    const {
+        sockets: {
+            adapter: { sids, rooms },
+        },
+    } = io;
+    const publicRooms = [];
+    rooms.forEach((_, key) => {
+        if (sids.get(key) === undefined) {
+            publicRooms.push(key);
+        }
+    });
+    return publicRooms;
+};
+
+io.on('connection', (socket) => {
+    socket["nickname"] = `익명(${count})`;
+    count++;
+
+    socket.onAny((event) => {
+        console.log(`Socket Event: ${event}`);
+    });
+
+    socket.on('enter_room', (roomName, done) => {
+        socket.join(roomName);
+        socket.room = roomName;
+        if (!rooms[roomName]) {
+            rooms[roomName] = { participants: 1 };
+        } else {
+            rooms[roomName].participants += 1;
+        }
+        io.to(roomName).emit('welcome', socket.nickname, rooms[roomName].participants);
+        io.sockets.emit('room_change', publicRooms());
+        done();
+    });
+
+    socket.on('leave_room', (roomName, done) => {
+        if (rooms[roomName]) {
+            rooms[roomName].participants -= 1;
+            if (rooms[roomName].participants === 0) {
+                delete rooms[roomName];
+            }
+        }
+        socket.leave(roomName);
+        io.to(roomName).emit('bye', socket.nickname, rooms[roomName]?.participants);
+        io.sockets.emit('room_change', publicRooms());
+        done();
+    });
+
+    socket.on('new_message', (message, roomName, done) => {
+        io.to(roomName).emit('new_message', `${socket.nickname}: ${message}`);
+        done();
+    });
+
+    socket.on('nickname', (nickname) => {
+        socket["nickname"] = nickname;
+    });
+
+    socket.on('disconnect', () => {
+        const roomName = socket.room;
+        if (roomName && rooms[roomName]) {
+            rooms[roomName].participants -= 1;
+            if (rooms[roomName].participants === 0) {
+                delete rooms[roomName];
+            }
+            io.to(roomName).emit('bye', socket.nickname, rooms[roomName]?.participants);
+        }
+        io.sockets.emit('room_change', publicRooms());
+    });
+});
+
+
+
+
+server.listen(port, () => console.log(`Example app listening on port ${port}!`));
+//app.listen(port, () => console.log(`Example app listening on port ${port}!`))
