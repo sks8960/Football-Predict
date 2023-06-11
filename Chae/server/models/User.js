@@ -32,7 +32,42 @@ const userSchema = mongoose.Schema({
     },
     tokenExp: {
         type: Number
-    }
+    },
+    matchingRequests: [{
+        fromUser: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User'
+        },
+        date: {
+            type: Date
+        },
+        time: {
+            type: String
+        },
+        location: {
+            type: String
+        },
+        accepted: {
+            type: Boolean,
+            default: false
+        }
+    }],
+
+    matchedEvents: [{
+        fromUser: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User'
+        },
+        date: {
+            type: Date
+        },
+        time: {
+            type: String
+        },
+        location: {
+            type: String
+        }
+    }]
 })
 
 

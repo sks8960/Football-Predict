@@ -47,8 +47,123 @@ const io = new Server(server, {
     }
 })
 
-
 app.get('/', (req, res) => res.send("hello World!!!"))
+
+
+app.get('/user-list', async (req, res) => {
+    try {
+        const userList = await User.find({}, 'name');
+        res.json(userList);
+    } catch (error) {
+        console.error('Failed to fetch user list:', error);
+        res.status(500).json({ error: 'Failed to fetch user list' });
+    }
+});
+
+app.get('/api/matching-request', async (req, res) => {
+    try {
+
+        if (!req.user) {
+            throw new Error('사용자가 인증되지 않았습니다.');
+        }
+
+        const matchingRequest = await User.findOne({ _id: req.user._id, 'matchingRequests.accepted': false })
+            .populate('matchingRequests.fromUser', 'name')
+            .select('matchingRequests');
+
+        if (!matchingRequest) {
+            throw new Error('매칭 요청을 찾을 수 없습니다.');
+        }
+
+        res.json(matchingRequest.matchingRequests[0]);
+    } catch (error) {
+        console.error('Failed to fetch matching request:', error);
+        res.status(500).json({ error: 'Failed to fetch matching request' });
+    }
+});
+
+
+
+// 매칭 요청 보내기 API 엔드포인트
+app.post('/send-matching-request', async (req, res) => {
+    const { fromUserId, toUserId, date, hour, minute, location } = req.body;
+
+    try {
+        const fromUser = await User.findById(fromUserId);
+        const toUser = await User.findByIdAndUpdate(
+            toUserId,
+            {
+                $push: {
+                    matchingRequests: {
+                        fromUser: fromUserId,
+                        date,
+                        hour,
+                        minute,
+                        location,
+                    },
+                },
+            },
+            { new: true }
+        );
+
+        console.log('Matching request sent successfully');
+        res.json({ message: 'Matching request sent successfully', fromUser, toUser });
+    } catch (error) {
+        console.error('Failed to send matching request:', error);
+        res.status(500).json({ error: 'Failed to send matching request' });
+    }
+});
+
+// 매칭 요청 수락 API 엔드포인트
+app.post('/api/accept-matching-request', async (req, res) => {
+    const { userId, requestId } = req.body;
+
+    try {
+        const user = await User.findById(userId);
+        const matchingRequest = user.matchingRequests.find(request => request._id.toString() === requestId);
+        if (matchingRequest) {
+            user.matchingRequests.pull(matchingRequest._id);
+            user.matchedEvents.push({
+                fromUser: matchingRequest.fromUser,
+                date: matchingRequest.date,
+                hour: matchingRequest.hour,
+                minute: matchingRequest.minute,
+                location: matchingRequest.location,
+            });
+            await user.save();
+
+            console.log('Matching request accepted');
+            res.json({ message: 'Matching request accepted', user });
+        } else {
+            console.error('Matching request not found');
+            res.status(404).json({ error: 'Matching request not found' });
+        }
+    } catch (error) {
+        console.error('Failed to accept matching request:', error);
+        res.status(500).json({ error: 'Failed to accept matching request' });
+    }
+});
+
+// 매칭 요청 거절 API 엔드포인트
+app.post('/reject-matching-request', async (req, res) => {
+    const { userId, requestId } = req.body;
+
+    try {
+        const user = await User.findByIdAndUpdate(
+            userId,
+            { $pull: { matchingRequests: { _id: requestId } } },
+            { new: true }
+        );
+
+        console.log('Matching request rejected');
+        res.json({ message: 'Matching request rejected', user });
+    } catch (error) {
+        console.error('Failed to reject matching request:', error);
+        res.status(500).json({ error: 'Failed to reject matching request' });
+    }
+});
+
+
 
 
 app.post('/api/users/register', (req, res) => {
@@ -99,20 +214,33 @@ app.post('/api/users/login', (req, res) => {
 //role 1 어드인 role 2 특정 부서 어드민
 // role 0 -> 일반유저 role 0이 아니면 관리자
 
-app.get('/api/users/auth', auth, (req, res) => {
+app.get('/api/users/auth', auth, async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id)
+            .populate('matchingRequests.fromUser', 'name')
+            .select('-password');
 
-    //여기 까지 미들웨어를 통과해 왔다는 얘기는 Authentication 이 True 라는 말.
-    res.status(200).json({
-        _id: req.user._id,
-        isAdmin: req.user.role === 0 ? false : true,
-        isAuth: true,
-        email: req.user.email,
-        name: req.user.name,
-        lastname: req.user.lastname,
-        role: req.user.role,
-        image: req.user.image
-    })
-})
+        if (!user) {
+            throw new Error('사용자를 찾을 수 없습니다.');
+        }
+
+        res.status(200).json({
+            _id: user._id,
+            isAdmin: user.role === 0 ? false : true,
+            isAuth: true,
+            email: user.email,
+            name: user.name,
+            lastname: user.lastname,
+            role: user.role,
+            image: user.image,
+            matchingRequests: user.matchingRequests,
+            matchedEvents: user.matchedEvents
+        });
+    } catch (error) {
+        console.error('Failed to fetch user:', error);
+        res.status(500).json({ error: 'Failed to fetch user' });
+    }
+});
 
 app.get('/api/users/logout', auth, (req, res) => {
     User.findOneAndUpdate({ _id: req.user._id }, { token: "" })
@@ -588,107 +716,6 @@ app.get('/teams/:teamName', (req, res) => {
         req.end();
     });
 });
-
-// =====================================================
-
-// let roomList = [];
-
-// // 방 생성 및 방 목록 가져오기
-// app.post('/api/chat/createRoom', (req, res) => {
-//     const { roomName } = req.body;
-
-//     // 방 이름 중복 체크
-//     const existingRoom = roomList.find((room) => room.name === roomName);
-//     if (existingRoom) {
-//         return res.json({ success: false, message: '이미 존재하는 방 이름입니다.' });
-//     }
-
-//     // 새로운 방 객체 생성
-//     const newRoom = {
-//         id: Date.now().toString(),
-//         name: roomName,
-//         users: [],
-//     };
-
-//     // 방 목록에 추가
-//     roomList.push(newRoom);
-
-//     // 클라이언트에게 방 목록 전달
-//     io.emit('roomListUpdated', { roomList });
-
-//     return res.json({ success: true, message: '방 생성 성공', roomList });
-// });
-
-// app.get('/api/chat/rooms', (req, res) => {
-//     const roomListWithUsersCount = roomList.map((room) => ({
-//         ...room,
-//         usersCount: room.users.length,
-//     }));
-
-//     return res.json({ roomList: roomListWithUsersCount });
-// });
-
-// // Socket.IO 연결 및 이벤트 처리
-// io.on('connection', (socket) => {
-//     console.log('새로운 사용자가 연결되었습니다.');
-
-//     // 클라이언트에게 초기 방 목록 전송
-//     socket.emit('roomListUpdated', { roomList });
-
-//     // 사용자가 방에 입장하는 이벤트 처리
-//     socket.on('enterRoom', (roomId, userName) => {
-//         // 방 ID에 해당하는 방 찾기
-//         const room = roomList.find((room) => room.id === roomId);
-
-//         if (room) {
-//             // 사용자 정보 저장
-//             room.users.push(userName);
-
-//             // 클라이언트에게 방 입장 완료 이벤트 전송
-//             socket.emit('enterRoomSuccess', room);
-//             socket.broadcast.emit('userEnteredRoom', room);
-
-//             // 방 목록 업데이트
-//             const roomListWithUpdatedUsersCount = roomList.map((room) => ({
-//                 ...room,
-//                 usersCount: room.users.length,
-//             }));
-//             io.emit('roomListUpdated', { roomList: roomListWithUpdatedUsersCount });
-//         } else {
-//             // 방이 존재하지 않을 경우 에러 이벤트 전송
-//             socket.emit('enterRoomError', '방이 존재하지 않습니다.');
-//         }
-//     });
-
-//     // 사용자가 방에서 나가는 이벤트 처리
-//     socket.on('leaveRoom', (roomId, userName) => {
-//         // 방 ID에 해당하는 방 찾기
-//         const room = roomList.find((room) => room.id === roomId);
-
-//         if (room) {
-//             // 사용자 정보 제거
-//             const userIndex = room.users.indexOf(userName);
-//             if (userIndex !== -1) {
-//                 room.users.splice(userIndex, 1);
-
-//                 // 클라이언트에게 사용자가 방에서 나갔음을 알림
-//                 socket.broadcast.emit('userLeftRoom', room);
-
-//                 // 방 목록 업데이트
-//                 const roomListWithUpdatedUsersCount = roomList.map((room) => ({
-//                     ...room,
-//                     usersCount: room.users.length,
-//                 }));
-//                 io.emit('roomListUpdated', { roomList: roomListWithUpdatedUsersCount });
-//             }
-//         }
-//     });
-
-//     // 연결 종료 시 처리
-//     socket.on('disconnect', () => {
-//         console.log('사용자 연결이 종료되었습니다.');
-//     });
-// });
 const rooms = {};
 var count = 0;
 
