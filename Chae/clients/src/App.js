@@ -18,6 +18,7 @@ import CalBundesliga from './components/views/callender/CalBundesliga';
 import Team from './components/views/TeamPage/Team';
 import ChatRoomPage from './components/views/ChatPage/ChatRoomPage';
 import Chat from "./components/views/ChatPage/Chat"
+import UserList from './components/views/UserList/UserList';
 function App() {
   return (
     <div>
@@ -37,6 +38,7 @@ function App() {
         <Route exact path='/cal/seriea' element={<CalSeriea />} />
         <Route exact path='/cal/bundesliga' element={<CalBundesliga />} />
         <Route exact path='/team' element={<Team />} />
+        <Route exact path='/userlist' element={<UserList />} />
       </Routes>
     </div>
   );

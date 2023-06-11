@@ -47,8 +47,99 @@ const io = new Server(server, {
     }
 })
 
-
 app.get('/', (req, res) => res.send("hello World!!!"))
+
+
+app.get('/user-list', async (req, res) => {
+    try {
+      const userList = await User.find({}, 'name');
+      res.json(userList);
+    } catch (error) {
+      console.error('Failed to fetch user list:', error);
+      res.status(500).json({ error: 'Failed to fetch user list' });
+    }
+  });
+  
+  // 매칭 요청 보내기 API 엔드포인트
+  app.post('/send-matching-request', async (req, res) => {
+    const { fromUserId, toUserId, date, hour, minute, location } = req.body;
+  
+    try {
+      const fromUser = await User.findById(fromUserId);
+      const toUser = await User.findByIdAndUpdate(
+        toUserId,
+        {
+          $push: {
+            matchingRequests: {
+              fromUser: fromUserId,
+              date,
+              hour,
+              minute,
+              location,
+            },
+          },
+        },
+        { new: true }
+      );
+  
+      console.log('Matching request sent successfully');
+      res.json({ message: 'Matching request sent successfully', fromUser, toUser });
+    } catch (error) {
+      console.error('Failed to send matching request:', error);
+      res.status(500).json({ error: 'Failed to send matching request' });
+    }
+  });
+  
+  // 매칭 요청 수락 API 엔드포인트
+  app.post('/accept-matching-request', async (req, res) => {
+    const { userId, requestId } = req.body;
+  
+    try {
+      const user = await User.findById(userId);
+      const matchingRequest = user.matchingRequests.find(request => request._id.toString() === requestId);
+      if (matchingRequest) {
+        user.matchingRequests.pull(matchingRequest._id);
+        user.matchedEvents.push({
+          fromUser: matchingRequest.fromUser,
+          date: matchingRequest.date,
+          hour: matchingRequest.hour,
+          minute: matchingRequest.minute,
+          location: matchingRequest.location,
+        });
+        await user.save();
+  
+        console.log('Matching request accepted');
+        res.json({ message: 'Matching request accepted', user });
+      } else {
+        console.error('Matching request not found');
+        res.status(404).json({ error: 'Matching request not found' });
+      }
+    } catch (error) {
+      console.error('Failed to accept matching request:', error);
+      res.status(500).json({ error: 'Failed to accept matching request' });
+    }
+  });
+  
+  // 매칭 요청 거절 API 엔드포인트
+  app.post('/reject-matching-request', async (req, res) => {
+    const { userId, requestId } = req.body;
+  
+    try {
+      const user = await User.findByIdAndUpdate(
+        userId,
+        { $pull: { matchingRequests: { _id: requestId } } },
+        { new: true }
+      );
+  
+      console.log('Matching request rejected');
+      res.json({ message: 'Matching request rejected', user });
+    } catch (error) {
+      console.error('Failed to reject matching request:', error);
+      res.status(500).json({ error: 'Failed to reject matching request' });
+    }
+  });
+  
+  
 
 
 app.post('/api/users/register', (req, res) => {
