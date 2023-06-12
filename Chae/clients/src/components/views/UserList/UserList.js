@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -7,28 +7,35 @@ function UserList() {
   const [userList, setUserList] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [matchingRequest, setMatchingRequest] = useState({
-    fromUser: null,
-    date: '',
-    hour: '',
-    minute: '',
-    location: '',
-    accepted: '',
-    _id: ''
+    fromUserId: '',
+    toUserId: '',
+    date: new Date(),
+    hour: 0,
+    minute: 0,
+    location: ''
   });
+
+  const datepickerRef = useRef(null); // react-datepicker 컴포넌트의 인스턴스 참조
 
   useEffect(() => {
     fetchUserList();
     getLoggedInUserId();
+
+    return () => {
+      // 컴포넌트가 언마운트될 때 이벤트 핸들러 해제
+      if (datepickerRef.current) {
+        datepickerRef.current.destroy();
+      }
+    };
   }, []);
 
   const getLoggedInUserId = () => {
-    // 사용자 인증 정보를 확인하기 위해 /api/users/auth 엔드포인트에 GET 요청 보내기
     return axios.get('/api/users/auth')
       .then(response => {
         if (response.data.isAuth) {
           setMatchingRequest(prevState => ({
             ...prevState,
-            fromUserId: response.data._id
+            fromUserId: response.data._id,
           }));
         } else {
           throw new Error('사용자가 인증되지 않았습니다.');
@@ -64,18 +71,32 @@ function UserList() {
     setModalOpen(false);
   };
 
-  const handleDateChange = date => {
+  const handleDatetimeChange = date => {
+    const selectedDate = new Date(date); // 선택한 날짜와 시간 정보를 담은 Date 객체
+
+    // UTC 기준의 시간을 로컬 타임존에 맞추기 위해 변환
+    const year = selectedDate.getUTCFullYear();
+    const month = selectedDate.getUTCMonth();
+    const day = selectedDate.getUTCDate();
+    const hour = matchingRequest.hour || 0; // 시간 정보가 없을 경우 0으로 설정
+    const minute = matchingRequest.minute || 0; // 분 정보가 없을 경우 0으로 설정
+    const newDate = new Date(year, month, day, hour, minute);
+
     setMatchingRequest(prevState => ({
       ...prevState,
-      date: date
+      date: newDate
     }));
   };
+
+
+
+
 
   const handleHourChange = e => {
     const { value } = e.target;
     setMatchingRequest(prevState => ({
       ...prevState,
-      hour: value
+      hour: parseInt(value, 10)
     }));
   };
 
@@ -83,7 +104,7 @@ function UserList() {
     const { value } = e.target;
     setMatchingRequest(prevState => ({
       ...prevState,
-      minute: value
+      minute: parseInt(value, 10)
     }));
   };
 
@@ -97,9 +118,8 @@ function UserList() {
 
   const handleSubmit = e => {
     e.preventDefault();
-    // 매칭 요청 전송 로직 추가
     axios
-      .post('http://localhost:5000/send-matching-request', matchingRequest)
+      .post('http://localhost:5000/api/send-matching-request', matchingRequest)
       .then(response => {
         console.log('Matching request sent successfully');
         closeModal();
@@ -127,8 +147,9 @@ function UserList() {
             <label>
               Date:
               <DatePicker
+                ref={datepickerRef}
                 selected={matchingRequest.date}
-                onChange={handleDateChange}
+                onChange={handleDatetimeChange}
               />
             </label>
             <br />
@@ -136,9 +157,6 @@ function UserList() {
               Hour:
               <input
                 type="number"
-                min="0"
-                max="23"
-                name="hour"
                 value={matchingRequest.hour}
                 onChange={handleHourChange}
               />
@@ -148,9 +166,6 @@ function UserList() {
               Minute:
               <input
                 type="number"
-                min="0"
-                max="59"
-                name="minute"
                 value={matchingRequest.minute}
                 onChange={handleMinuteChange}
               />

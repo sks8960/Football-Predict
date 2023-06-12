@@ -85,7 +85,7 @@ app.get('/api/matching-request', async (req, res) => {
 
 
 // 매칭 요청 보내기 API 엔드포인트
-app.post('/send-matching-request', async (req, res) => {
+app.post('/api/send-matching-request', async (req, res) => {
     const { fromUserId, toUserId, date, hour, minute, location } = req.body;
 
     try {
@@ -97,8 +97,7 @@ app.post('/send-matching-request', async (req, res) => {
                     matchingRequests: {
                         fromUser: fromUserId,
                         date,
-                        hour,
-                        minute,
+                        time: { hour, minute }, // 시간 정보를 객체로 추가합니다.
                         location,
                     },
                 },
@@ -118,9 +117,7 @@ app.post('/send-matching-request', async (req, res) => {
 app.post('/api/accept-matching-request', async (req, res) => {
     const { userId, requestId } = req.body;
     try {
-        const matchingRequests = await User.find({ 'matchingRequests.fromUser': new ObjectId(userId) }, 'matchingRequests');
-        console.log(matchingRequests);
-
+        const matchingRequests = await User.find({ 'matchingRequests.fromUser': userId }, 'matchingRequests');
         const user = matchingRequests[matchingRequests.length - 1];
         const matchingRequest = user.matchingRequests.find(request => request._id.toString() === requestId);
 
@@ -230,6 +227,8 @@ app.post('/api/users/login', (req, res) => {
 app.get('/api/users/auth', auth, async (req, res) => {
     try {
         const user = await User.findById(req.user._id)
+            .populate('matchingRequests.fromUser', 'name')
+            .select('-password');
 
         if (!user) {
             throw new Error('사용자를 찾을 수 없습니다.');
