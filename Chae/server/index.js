@@ -15,7 +15,7 @@ const coockieParser = require('cookie-parser');
 const { auth } = require('./middleware/auth');
 const socket = require("socket.io");
 const { Server } = require('socket.io');
-
+const { ObjectId } = require('mongodb');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(coockieParser());
@@ -117,19 +117,27 @@ app.post('/send-matching-request', async (req, res) => {
 // 매칭 요청 수락 API 엔드포인트
 app.post('/api/accept-matching-request', async (req, res) => {
     const { userId, requestId } = req.body;
-
     try {
-        const user = await User.findById(userId);
+        const matchingRequests = await User.find({ 'matchingRequests.fromUser': new ObjectId(userId) }, 'matchingRequests');
+        console.log(matchingRequests);
+
+        const user = matchingRequests[matchingRequests.length - 1];
         const matchingRequest = user.matchingRequests.find(request => request._id.toString() === requestId);
+
         if (matchingRequest) {
             user.matchingRequests.pull(matchingRequest._id);
+
+            if (!user.matchedEvents) {
+                user.matchedEvents = []; // Initialize the matchedEvents array if it doesn't exist
+            }
+
             user.matchedEvents.push({
                 fromUser: matchingRequest.fromUser,
                 date: matchingRequest.date,
-                hour: matchingRequest.hour,
-                minute: matchingRequest.minute,
+                time: matchingRequest.time,
                 location: matchingRequest.location,
             });
+
             await user.save();
 
             console.log('Matching request accepted');
@@ -143,6 +151,11 @@ app.post('/api/accept-matching-request', async (req, res) => {
         res.status(500).json({ error: 'Failed to accept matching request' });
     }
 });
+
+
+
+
+
 
 // 매칭 요청 거절 API 엔드포인트
 app.post('/reject-matching-request', async (req, res) => {
@@ -217,8 +230,6 @@ app.post('/api/users/login', (req, res) => {
 app.get('/api/users/auth', auth, async (req, res) => {
     try {
         const user = await User.findById(req.user._id)
-            .populate('matchingRequests.fromUser', 'name')
-            .select('-password');
 
         if (!user) {
             throw new Error('사용자를 찾을 수 없습니다.');

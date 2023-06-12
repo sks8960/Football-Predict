@@ -7,12 +7,13 @@ function UserList() {
   const [userList, setUserList] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [matchingRequest, setMatchingRequest] = useState({
-    fromUserId: '',
-    toUserId: '',
-    date: null,
+    fromUser: null,
+    date: '',
     hour: '',
     minute: '',
-    location: ''
+    location: '',
+    accepted: '',
+    _id: ''
   });
 
   useEffect(() => {

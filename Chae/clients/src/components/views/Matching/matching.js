@@ -2,7 +2,16 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 function MatchingRequestPage() {
-    const [matchingRequest, setMatchingRequest] = useState(null);
+    const [matchingRequest, setMatchingRequest] = useState({
+        fromUser: null,
+        date: '',
+        hour: '',
+        minute: '',
+        location: '',
+        accepted: '',
+        _id: ''
+    });
+
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -10,31 +19,36 @@ function MatchingRequestPage() {
         fetchMatchingRequest();
     }, []);
 
-    const fetchMatchingRequest = () => {
-        axios
-            .get('/api/users/auth')
-            .then(response => {
-                console.log(response.data)
-                if (response.data.isAuth) {
-                    setMatchingRequest(response.data.matchingRequests[0]);
-                } else {
-                    throw new Error('사용자가 인증되지 않았습니다.');
-                }
-            })
-            .catch(error => {
-                console.error(error);
-                setError('매칭 요청을 불러오는 중에 오류가 발생했습니다.');
-            })
-            .finally(() => {
-                setLoading(false);
-            });
+    useEffect(() => {
+        console.log(matchingRequest);
+    }, [matchingRequest]);
+
+    const fetchMatchingRequest = async () => {
+        try {
+            const response = await axios.get('/api/users/auth');
+            if (response.data.isAuth) {
+                var count = response.data.matchingRequests.length - 1;
+                console.log(response.data.matchingRequests[count]);
+                setMatchingRequest(response.data.matchingRequests[count]);
+                console.log(matchingRequest);
+            } else {
+                throw new Error('사용자가 인증되지 않았습니다.');
+            }
+        } catch (error) {
+            console.error(error);
+            setError('매칭 요청을 불러오는 중에 오류가 발생했습니다.');
+        } finally {
+            setLoading(false);
+        }
     };
 
+
     const acceptMatchingRequest = () => {
+        console.log(matchingRequest);
         axios
             .post('/api/accept-matching-request', {
                 requestId: matchingRequest._id,
-                userId: matchingRequest.fromUser._id
+                userId: matchingRequest.fromUser
             })
             .then(response => {
                 console.log('Matching request accepted');
@@ -49,7 +63,7 @@ function MatchingRequestPage() {
         axios
             .post('/api/reject-matching-request', {
                 requestId: matchingRequest._id,
-                userId: matchingRequest.fromUser._id
+                userId: matchingRequest.fromUser
             })
             .then(response => {
                 console.log('Matching request rejected');
@@ -75,14 +89,15 @@ function MatchingRequestPage() {
     return (
         <div>
             <h2>Matching Request</h2>
-            <p>From: {matchingRequest.fromUser.name}</p>
+            <p>From: {matchingRequest.fromUser}</p>
             <p>Date: {matchingRequest.date}</p>
-            <p>Time: {matchingRequest.time}</p>
+            <p>Time: {matchingRequest.hour}</p>
             <p>Location: {matchingRequest.location}</p>
             <button onClick={acceptMatchingRequest}>Accept</button>
             <button onClick={rejectMatchingRequest}>Reject</button>
         </div>
     );
+
 }
 
 export default MatchingRequestPage;
