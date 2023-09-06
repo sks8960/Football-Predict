@@ -1,98 +1,99 @@
 <!DOCTYPE html>
-<html lang='en'>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      .fixture-table {
+        border-collapse: collapse;
+        width: 100%;
+      }
 
-<head>
-  <meta charset='utf-8' />
-  <style>
-    .fixture-table {
-      border-collapse: collapse;
-      width: 100%;
-    }
+      .fixture-table th,
+      .fixture-table td {
+        padding: 8px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+      }
 
-    .fixture-table th,
-    .fixture-table td {
-      padding: 8px;
-      text-align: left;
-      border-bottom: 1px solid #ddd;
-    }
+      .fixture-table th {
+        background-color: #f2f2f2;
+      }
+    </style>
+  </head>
 
-    .fixture-table th {
-      background-color: #f2f2f2;
-    }
-  </style>
-</head>
+  <body>
+    <div id="table-container"></div>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        fetch("http://localhost:5000/get-fixture")
+          .then(function (response) {
+            return response.json();
+          })
+          .then(function (data) {
+            const fixtureId = data.fixtureId;
+            savedFixtureId = fixtureId; // 변수에 fixtureId 저장
+            console.log("FixtureId 가져오기 성공:", savedFixtureId);
 
-<body>
-  <div id="table-container"></div>
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      fetch('http://localhost:5000/get-fixture')
-        .then(function (response) {
-          return response.json();
-        })
-        .then(function (data) {
-          const fixtureId = data.fixtureId;
-          savedFixtureId = fixtureId; // 변수에 fixtureId 저장
-          console.log('FixtureId 가져오기 성공:', savedFixtureId);
+            // fixtureId를 사용하여 통계 데이터 요청
+            fetch(`http://localhost:5000/cal/stats/${fixtureId}`)
+              .then(function (response) {
+                return response.json();
+              })
+              .then(function (stats) {
+                console.log("통계 데이터 가져오기 성공:", stats);
+                // 통계 데이터를 활용한 추가 작업 수행
 
-          // fixtureId를 사용하여 통계 데이터 요청
-          fetch(`http://localhost:5000/cal/stats/${fixtureId}`)
-            .then(function (response) {
-              return response.json();
-            })
-            .then(function (stats) {
-              console.log('통계 데이터 가져오기 성공:', stats);
-              // 통계 데이터를 활용한 추가 작업 수행
+                // 통계 데이터를 테이블로 시각화
+                const tableContainer =
+                  document.getElementById("table-container");
+                const table = document.createElement("table");
+                table.classList.add("fixture-table");
 
-              // 통계 데이터를 테이블로 시각화
-              const tableContainer = document.getElementById('table-container');
-              const table = document.createElement('table');
-              table.classList.add('fixture-table');
+                // 생성한 테이블의 헤더 생성
+                const headerRow = document.createElement("tr");
+                const typeHeader = document.createElement("th");
+                typeHeader.textContent = "Type";
 
-              // 생성한 테이블의 헤더 생성
-              const headerRow = document.createElement('tr');
-              const typeHeader = document.createElement('th');
-              typeHeader.textContent = 'Type';
-
-              const teamHeaders = stats.map(stat => {
-                const teamHeader = document.createElement('th');
-                teamHeader.textContent = stat.teamName;
-                return teamHeader;
-              });
-
-              headerRow.appendChild(typeHeader);
-              teamHeaders.forEach(header => headerRow.appendChild(header));
-              table.appendChild(headerRow);
-
-              // 통계 데이터 행 추가
-              const types = stats[0].statistics.map(stat => stat.type);
-              types.forEach(type => {
-                const row = document.createElement('tr');
-                const typeCell = document.createElement('td');
-                typeCell.textContent = type;
-                row.appendChild(typeCell);
-
-                stats.forEach(stat => {
-                  const value = stat.statistics.find(statistic => statistic.type === type).value;
-                  const valueCell = document.createElement('td');
-                  valueCell.textContent = value;
-                  row.appendChild(valueCell);
+                const teamHeaders = stats.map((stat) => {
+                  const teamHeader = document.createElement("th");
+                  teamHeader.textContent = stat.teamName;
+                  return teamHeader;
                 });
 
-                table.appendChild(row);
+                headerRow.appendChild(typeHeader);
+                teamHeaders.forEach((header) => headerRow.appendChild(header));
+                table.appendChild(headerRow);
+
+                // 통계 데이터 행 추가
+                const types = stats[0].statistics.map((stat) => stat.type);
+                types.forEach((type) => {
+                  const row = document.createElement("tr");
+                  const typeCell = document.createElement("td");
+                  typeCell.textContent = type;
+                  row.appendChild(typeCell);
+
+                  stats.forEach((stat) => {
+                    const value = stat.statistics.find(
+                      (statistic) => statistic.type === type
+                    ).value;
+                    const valueCell = document.createElement("td");
+                    valueCell.textContent = value;
+                    row.appendChild(valueCell);
+                  });
+
+                  table.appendChild(row);
+                });
+
+                tableContainer.appendChild(table);
+              })
+              .catch(function (error) {
+                console.log("통계 데이터 가져오기 실패:", error);
               });
-
-              tableContainer.appendChild(table);
-            })
-            .catch(function (error) {
-              console.log('통계 데이터 가져오기 실패:', error);
-            });
-        })
-        .catch(function (error) {
-          console.log('FixtureId 가져오기 실패:', error);
-        });
-    });
-  </script>
-</body>
-
+          })
+          .catch(function (error) {
+            console.log("FixtureId 가져오기 실패:", error);
+          });
+      });
+    </script>
+  </body>
 </html>
