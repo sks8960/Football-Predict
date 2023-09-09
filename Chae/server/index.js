@@ -640,30 +640,33 @@ app.get("/cal/predict/:fixtureId", (req, res) => {
   
   const req5 = http.request(options, function (res) {
     const chunks = [];
-
+  
     res.on('data', function (chunk) {
       chunks.push(chunk);
     });
-
+  
     res.on('end', function () {
       const body = Buffer.concat(chunks);
       const responseData = JSON.parse(body.toString());
-      console.log(body.toString());
-
+      console.log(responseData);
       // 'predictions' 객체에 접근하여 클라이언트로 응답을 보냅니다.
-      res.json(responseData.predictions);
+      if (responseData) {
+        res.json(responseData)
+        console.log(responseData);
+      } else {
+        res.status(500).json({ error: "No predictions found" });
+      }
+      });
     });
-  });
   
   req5.end();
 
   req5.on("error", function (error) {
     console.error("Error:", error);
-    res
-      .status(500)
-      .json({ error: "An error occurred while fetching prediction" });
+    res.status(500).json({ error: "An error occurred while fetching prediction" });
   });
 });
+
 
 
 app.get("/teams/:teamName", (req, res) => {

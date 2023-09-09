@@ -27,10 +27,6 @@
           })
           .then(function (predictions) {
             console.log("예측 데이터 가져오기 성공:", predictions);
-
-            // 가져온 예측 데이터를 화면에 표시
-            const predictionsContainer = document.getElementById("predictions-container");
-            predictionsContainer.innerHTML = JSON.stringify(predictions, null, 2);
           })
           .catch(function (error) {
             console.error("예측 데이터 가져오기 실패:", error);
