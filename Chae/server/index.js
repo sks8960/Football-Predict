@@ -538,6 +538,11 @@ app.get("/cal/cal/bundesliga", (req, res) => {
 app.get("/cal/statistics", function (req, res) {
   res.sendFile(__dirname + "/calStatistics.html");
 });
+
+app.get("/cal/predict", function (req, res) {
+  res.sendFile(__dirname + "/calPredict.html");
+});
+
 let savedFixtureId = null;
 
 app.post("/save-fixture", (req, res) => {
@@ -565,6 +570,8 @@ app.get("/cal/stats/:fixtureId", (req, res) => {
       useQueryString: true,
     },
   };
+
+  
 
   const req4 = https.request(options, function (response) {
     const chunks = [];
@@ -615,6 +622,49 @@ app.get("/cal/stats/:fixtureId", (req, res) => {
       .json({ error: "An error occurred while fetching statistics" });
   });
 });
+
+app.get("/cal/predict/:fixtureId", (req, res) => {
+  const fixtureId = req.params.fixtureId;
+  console.log("서버 Fixture ID:", fixtureId);
+
+  const options = {
+    method: 'GET',
+    hostname: 'api-football-v1.p.rapidapi.com',
+    port: null,
+    path: `/v3/predictions?fixture=${fixtureId}`,
+    headers: {
+      'X-RapidAPI-Key': '96e6fbd9e1msh363fb680c23119fp131a0ajsn8edccdfdd332',
+      'X-RapidAPI-Host': 'api-football-v1.p.rapidapi.com'
+    }
+  };
+  
+  const req5 = http.request(options, function (res) {
+    const chunks = [];
+
+    res.on('data', function (chunk) {
+      chunks.push(chunk);
+    });
+
+    res.on('end', function () {
+      const body = Buffer.concat(chunks);
+      const responseData = JSON.parse(body.toString());
+      console.log(body.toString());
+
+      // 'predictions' 객체에 접근하여 클라이언트로 응답을 보냅니다.
+      res.json(responseData.predictions);
+    });
+  });
+  
+  req5.end();
+
+  req5.on("error", function (error) {
+    console.error("Error:", error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while fetching prediction" });
+  });
+});
+
 
 app.get("/teams/:teamName", (req, res) => {
   const teamName = req.params.teamName;

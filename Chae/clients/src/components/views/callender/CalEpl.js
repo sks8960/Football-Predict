@@ -65,7 +65,7 @@ const CalEpl = () => {
                 statsPopup.focus();
             } else {
                 const predictionPopup = window.open(
-                    'https://example.com/prediction',
+                    'http://localhost:5000/cal/predict',
                     '_blank',
                     'width=600,height=400'
                 );

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <style>
+
+    </style>
+  </head>
+
+  <body>
+    <div id="table-container"></div>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        fetch("http://localhost:5000/get-fixture")
+          .then(function (response) {
+            return response.json();
+          })
+          .then(function (data) {
+            const fixtureId = data.fixtureId;
+            savedFixtureId = fixtureId; // 변수에 fixtureId 저장
+            console.log("FixtureId 가져오기 성공:", savedFixtureId);
+
+            // fixtureId를 사용하여 통계 데이터 요청
+            fetch(`http://localhost:5000/cal/predict/${fixtureId}`) // 서버에 요청을 보냅니다.
+          .then(function (response) {
+            return response.json();
+          })
+          .then(function (predictions) {
+            console.log("예측 데이터 가져오기 성공:", predictions);
+
+            // 가져온 예측 데이터를 화면에 표시
+            const predictionsContainer = document.getElementById("predictions-container");
+            predictionsContainer.innerHTML = JSON.stringify(predictions, null, 2);
+          })
+          .catch(function (error) {
+            console.error("예측 데이터 가져오기 실패:", error);
+          });
+      });
+    });
+    </script>
+  </body>
+</html>
