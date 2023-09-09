@@ -2,7 +2,7 @@ const http = require('https');
 const express = require("express");
 const app = express();
 
-let fixtureId = 1035096;
+let fixtureId = 1035080;
 
 const options = {
 	method: 'GET',

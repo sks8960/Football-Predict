@@ -1,38 +1,189 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <style>
+<head>
+  <meta charset="utf-8" />
+  <style>
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
 
-    </style>
-  </head>
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
 
-  <body>
-    <div id="table-container"></div>
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        fetch("http://localhost:5000/get-fixture")
-          .then(function (response) {
-            return response.json();
-          })
-          .then(function (data) {
-            const fixtureId = data.fixtureId;
-            savedFixtureId = fixtureId; // 변수에 fixtureId 저장
-            console.log("FixtureId 가져오기 성공:", savedFixtureId);
+    th {
+      background-color: #f2f2f2;
+    }
 
-            // fixtureId를 사용하여 통계 데이터 요청
-            fetch(`http://localhost:5000/cal/predict/${fixtureId}`) // 서버에 요청을 보냅니다.
-          .then(function (response) {
-            return response.json();
-          })
-          .then(function (predictions) {
-            console.log("예측 데이터 가져오기 성공:", predictions);
-          })
-          .catch(function (error) {
-            console.error("예측 데이터 가져오기 실패:", error);
-          });
-      });
+    .table-container {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="table-container" id="comparison-container"></div>
+  <div class="table-container" id="predictions-container"></div>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      fetch("http://localhost:5000/get-fixture")
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          const fixtureId = data.fixtureId;
+          savedFixtureId = fixtureId; // 변수에 fixtureId 저장
+          console.log("FixtureId 가져오기 성공:", savedFixtureId);
+
+          // fixtureId를 사용하여 통계 데이터 요청
+          fetch(`http://localhost:5000/cal/predict/${fixtureId}`)
+            .then(function (response) {
+              return response.json();
+            })
+            .then(function (predictions) {
+              console.log("예측 데이터 가져오기 성공:", predictions);
+
+              // comparison 데이터를 HTML 테이블로 변환하여 표시
+              const comparisonContainer = document.getElementById("comparison-container");
+
+              // home과 away를 가져와서 표시
+              const homeTeam = predictions.response[0].teams.home.name;
+              const awayTeam = predictions.response[0].teams.away.name;
+              const teamInfo = document.createElement("p");
+              teamInfo.textContent = `home: ${homeTeam}, away: ${awayTeam}`;
+              comparisonContainer.appendChild(teamInfo);
+
+              const comparisonTable = createComparisonTable(predictions.response[0].comparison);
+              comparisonContainer.appendChild(comparisonTable);
+
+              // predictions 데이터를 HTML 테이블로 변환하여 표시
+              const predictionsContainer = document.getElementById("predictions-container");
+              const predictionsData = predictions.response[0].predictions;
+
+              // goals 항목을 comparison으로 옮기고 home과 away로 분리
+              const comparisonGoals = {
+                goals_home: predictionsData.goals.home,
+                goals_away: predictionsData.goals.away
+              };
+
+              // percentage 항목에서 draw를 제거하고 home과 away만 가져옴
+              const comparisonPercentage = {
+                percentage_home: predictionsData.percent.home,
+                percentage_away: predictionsData.percent.away
+              };
+
+              // winner 항목 삭제
+              delete predictionsData.winner;
+
+              // 기존의 predictions 데이터에서 goals, percent 항목 삭제
+              delete predictionsData.goals;
+              delete predictionsData.percent;
+
+              const predictionsTable = createPredictionsTable({
+                ...predictionsData,
+                ...comparisonGoals,
+                ...comparisonPercentage
+              });
+              predictionsContainer.appendChild(predictionsTable);
+            })
+            .catch(function (error) {
+              console.error("데이터 가져오기 실패:", error);
+            });
+        })
+        .catch(function (error) {
+          console.error("FixtureId 가져오기 실패:", error);
+        });
+
+      function createComparisonTable(data) {
+        const table = document.createElement("table");
+        table.classList.add("fixture-table");
+
+        // 테이블 헤더 생성
+        const headerRow = document.createElement("tr");
+        const typeHeader = document.createElement("th");
+        typeHeader.textContent = "Type";
+        headerRow.appendChild(typeHeader);
+        const homeHeader = document.createElement("th");
+        homeHeader.textContent = "Home";
+        headerRow.appendChild(homeHeader);
+        const awayHeader = document.createElement("th");
+        awayHeader.textContent = "Away";
+        headerRow.appendChild(awayHeader);
+        table.appendChild(headerRow);
+
+        // 데이터 행 생성
+        for (const key in data) {
+          const dataRow = document.createElement("tr");
+
+          const typeCell = document.createElement("td");
+          typeCell.textContent = key;
+          dataRow.appendChild(typeCell);
+
+          const homeCell = document.createElement("td");
+          homeCell.textContent = data[key].home;
+          dataRow.appendChild(homeCell);
+
+          const awayCell = document.createElement("td");
+          awayCell.textContent = data[key].away;
+          dataRow.appendChild(awayCell);
+
+          table.appendChild(dataRow);
+        }
+
+        return table;
+      }
+
+      function createPredictionsTable(data) {
+        const table = document.createElement("table");
+        table.classList.add("fixture-table");
+
+        // 테이블 헤더 생성
+        const headerRow = document.createElement("tr");
+        const typeHeader = document.createElement("th");
+        typeHeader.textContent = "Type";
+        headerRow.appendChild(typeHeader);
+        const valueHeader = document.createElement("th");
+        valueHeader.textContent = "Value";
+        headerRow.appendChild(valueHeader);
+        table.appendChild(headerRow);
+
+        // 데이터 행 생성
+        for (const key in data) {
+          // win_or_draw와 under_over 항목은 건너뜁니다.
+          if (key === "win_or_draw" || key === "under_over") {
+            continue;
+          }
+
+          const dataRow = document.createElement("tr");
+
+          const typeCell = document.createElement("td");
+          typeCell.textContent = key;
+          dataRow.appendChild(typeCell);
+
+          const valueCell = document.createElement("td");
+
+          // 객체를 문자열로 변환하여 표시
+          if (typeof data[key] === "object") {
+            const subkeys = Object.keys(data[key]);
+            const subvalues = Object.values(data[key]);
+            const formattedValue = subkeys.map((subkey, index) => {
+              return `${subkey}: ${subvalues[index]}`;
+            }).join(", ");
+            valueCell.textContent = formattedValue;
+          } else {
+            valueCell.textContent = data[key];
+          }
+
+          dataRow.appendChild(valueCell);
+
+          table.appendChild(dataRow);
+        }
+
+        return table;
+      }
     });
-    </script>
-  </body>
+  </script>
+</body>
 </html>
