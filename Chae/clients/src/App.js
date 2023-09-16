@@ -20,11 +20,14 @@ import ChatRoomPage from './components/views/ChatPage/ChatRoomPage';
 import Chat from "./components/views/ChatPage/Chat"
 import UserList from './components/views/UserList/UserList';
 import Matching from "./components/views/Matching/matching";
+
+import Navbar from "./mainpage/Navbar";
+
 function App() {
   return (
     <div>
+      <Navbar />
       <Routes>
-        <Route exact path="/" element={<LandingPage />} />
         <Route exact path="/login" element={<LoginPage />} />
         <Route exact path="/register" element={<RegisterPage />} />
         {/* <Route exact path="/chat" element={<Chat_Page_Login />} /> */}
