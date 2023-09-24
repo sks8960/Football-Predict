@@ -1,3 +1,5 @@
+/* 득점 및 어시스트 테이블 교체 방식 */
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
