@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>리그 등점 테이블</title>
+  <style>
+    /* CSS 스타일링을 여기에 추가 */
+  </style>
+</head>
+<body>
+  <h1>리그 등점 테이블</h1>
+  <button id="eplButton">EPL</button>
+  <button id="laligaButton">La Liga</button>
+  <button id="bundesligaButton">Bundesliga</button>
+  <button id="serieaButton">Serie A</button>
+  <button id="ligue1Button">Ligue 1</button>
+  <table id="table">
+    <!-- 테이블 헤더와 데이터가 여기에 표시될 것입니다 -->
+  </table>
+
+  <script>
+    const table = document.getElementById('table');
+
+    // 각 리그에 대한 데이터를 저장할 객체
+    const leagueData = {
+      epl: [],
+      laliga: [],
+      bundesliga: [],
+      seriea: [],
+      ligue1: [],
+    };
+
+    // 테이블 헤더 업데이트 함수
+    function updateTableHeader(league) {
+      table.innerHTML = ''; // 기존 내용 지우기
+
+      // 테이블 헤더 추가
+      const headerRow = document.createElement('tr');
+      headerRow.innerHTML = '<th>선수 이름</th><th>팀 이름</th><th>골 수</th>';
+      table.appendChild(headerRow);
+
+      // 해당 리그 데이터로 테이블 업데이트
+      leagueData[league].forEach((scorer) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `<td>${scorer.playerName}</td><td>${scorer.teamName}</td><td>${scorer.goals}</td>`;
+        table.appendChild(row);
+      });
+    }
+
+    // API에서 데이터 가져오기
+    function fetchData(league) {
+  const apiKey = '96e6fbd9e1msh363fb680c23119fp131a0ajsn8edccdfdd332';
+  const apiUrl = 'https://api-football-v1.p.rapidapi.com/v3/players/topscorers';
+
+  const config = {
+    headers: {
+      'X-RapidAPI-Key': apiKey,
+      'X-RapidAPI-Host': 'api-football-v1.p.rapidapi.com',
+    },
+    params: {
+      league: getLeagueCode(league), // 리그 코드를 가져오는 함수를 사용
+      season: '2023',
+    },
+  };
+
+  axios
+    .get(apiUrl, config)
+    .then((response) => {
+      const data = response.data;
+
+      if (data && data.response && data.response.length > 0) {
+        leagueData[league] = data.response; // leagueData에 데이터 저장
+        updateTableHeader(league);
+      } else {
+        console.log('데이터를 찾을 수 없습니다.');
+      }
+    })
+    .catch((error) => {
+      console.error('API 요청 중 오류 발생:', error);
+    });
+}
+
+// 리그 코드를 가져오는 함수
+function getLeagueCode(league) {
+  // 각 리그에 대한 코드를 반환
+  // 예: EPL - '39', La Liga - '140', Bundesliga - '78', Serie A - '135', Ligue 1 - '61'
+  switch (league) {
+    case 'epl':
+      return '39';
+    case 'laliga':
+      return '140';
+    case 'bundesliga':
+      return '78';
+    case 'seriea':
+      return '135';
+    case 'ligue1':
+      return '61';
+    default:
+      return '';
+  }
+}
+
+    // 각 리그 버튼에 대한 이벤트 핸들러
+    document.getElementById('eplButton').addEventListener('click', () => {
+      fetchData('epl');
+    });
+    document.getElementById('laligaButton').addEventListener('click', () => {
+      fetchData('laliga');
+    });
+    document.getElementById('bundesligaButton').addEventListener('click', () => {
+      fetchData('bundesliga');
+    });
+    document.getElementById('serieaButton').addEventListener('click', () => {
+      fetchData('seriea');
+    });
+    document.getElementById('ligue1Button').addEventListener('click', () => {
+      fetchData('ligue1');
+    });
+  </script>
+</body>
+</html>

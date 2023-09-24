@@ -21,12 +21,17 @@ import Chat from "./components/views/ChatPage/Chat"
 import UserList from './components/views/UserList/UserList';
 import Matching from "./components/views/Matching/matching";
 
+import TopScores from './components/views/TopPlayers/TopScores'
+import TopAssists from './components/views/TopPlayers/TopAssists';
+
 import Navbar from "./mainpage/Navbar";
 
 function App() {
   return (
     <div>
       <Navbar />
+      <TopScores />
+      <TopAssists />
       <Routes>
         <Route exact path="/login" element={<LoginPage />} />
         <Route exact path="/register" element={<RegisterPage />} />
