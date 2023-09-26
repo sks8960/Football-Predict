@@ -25,14 +25,42 @@ import TopScores from './components/views/TopPlayers/TopScores'
 import TopAssists from './components/views/TopPlayers/TopAssists';
 
 import Navbar from "./mainpage/Navbar";
+import TopPerformers from './components/views/TopPlayers/TopPerformers';
+import TopPlayers from './components/views/TopPlayers/TopPlayers';
+
+import Space1 from './components/views/HomPage/Space1';
+import Space2 from './components/views/HomPage/Space2';
+import Space3 from './components/views/HomPage/Space3';
+import Space4 from './components/views/HomPage/Space4';
+import './components/views/HomPage/Quadrants.css';
+
+
+/* 홈페이지 레이아웃 사분면으로 구현 */
+function Quadrants() {
+  return (
+    <div className="container">
+      <div className="quadrant" id="quadrant1" style={{ width: '100%', height: '100%' }}>
+        <Space1 />
+      </div>
+      <div className="quadrant" id="quadrant2" style={{ width: '100%', height: '100%' }}>
+        <Space2 />
+      </div>
+      <div className="quadrant" id="quadrant3" style={{ width: '100%', height: '100%' }}>
+        <Space3 />
+      </div>
+      <div className="quadrant" id="quadrant4" style={{ width: '100%', height: '100%' }}>
+        <Space4 />
+      </div>
+    </div>
+  );
+}
 
 function App() {
   return (
     <div>
       <Navbar />
-      <TopScores />
-      <TopAssists />
       <Routes>
+        <Route path="/" element={<Quadrants />} />
         <Route exact path="/login" element={<LoginPage />} />
         <Route exact path="/register" element={<RegisterPage />} />
         {/* <Route exact path="/chat" element={<Chat_Page_Login />} /> */}
