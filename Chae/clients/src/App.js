@@ -25,7 +25,6 @@ import TopScores from './components/views/TopPlayers/TopScores'
 import TopAssists from './components/views/TopPlayers/TopAssists';
 
 import Navbar from "./mainpage/Navbar";
-import TopPerformers from './components/views/TopPlayers/TopPerformers';
 import TopPlayers from './components/views/TopPlayers/TopPlayers';
 
 import Space1 from './components/views/HomPage/Space1';

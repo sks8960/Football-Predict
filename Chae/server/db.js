@@ -2,8 +2,8 @@ const mysql = require('mysql'); // db연동 필요
 const connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: 'shin9790',
-    database: 'db'
+    password: 'cotmdgus1!',
+    database: 'test'
 });
 connection.connect((err) => {
     if (err) {
