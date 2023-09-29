@@ -84,7 +84,6 @@ const TopPlayers = () => {
 
   return (
     <div className='top-players-container'>
-      <h1>{isScoresMode ? '리그 득점 테이블' : '리그 어시스트 순위 테이블'}</h1>
       <div className="button-group">
         <div className="mode-buttons">
           <button className={`mode-button ${isScoresMode ? 'active' : ''}`} onClick={() => setIsScoresMode(true)}>득점 순위</button>

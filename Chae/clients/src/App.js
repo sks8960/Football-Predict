@@ -26,6 +26,7 @@ import TopAssists from './components/views/TopPlayers/TopAssists';
 
 import Navbar from "./mainpage/Navbar";
 import TopPlayers from './components/views/TopPlayers/TopPlayers';
+import TeamRank from "./components/views/TeamRank/TeamRank";
 
 import Space1 from './components/views/HomPage/Space1';
 import Space2 from './components/views/HomPage/Space2';

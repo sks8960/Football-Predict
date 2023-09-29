@@ -1,9 +1,12 @@
 /* 채팅 */
 import React from 'react';
+import TeamRank from '../TeamRank/TeamRank'
 
 function Space4() {
     return(
-        <p>Space4</p>
+        <div className="space4">
+        <TeamRank />
+      </div>
     )
   }
   
