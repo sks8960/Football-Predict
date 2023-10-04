@@ -20,7 +20,7 @@ import ChatRoomPage from './components/views/ChatPage/ChatRoomPage';
 import Chat from "./components/views/ChatPage/Chat"
 import UserList from './components/views/UserList/UserList';
 import Matching from "./components/views/Matching/matching";
-
+import EditPost from "./components/views/PostPage/EditPost"
 import TopScores from './components/views/TopPlayers/TopScores'
 import TopAssists from './components/views/TopPlayers/TopAssists';
 
@@ -77,6 +77,8 @@ function App() {
         <Route exact path='/team' element={<Team />} />
         <Route exact path='/userlist' element={<UserList />} />
         <Route exact path="/usermatch" element={<Matching />} />
+        <Route path="/post/edit/:id" element={<EditPost />} />
+
       </Routes>
     </div>
   );
