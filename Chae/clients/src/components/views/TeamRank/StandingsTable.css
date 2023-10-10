@@ -1,0 +1,57 @@
+/* StandingsTable.css */
+
+.standings-table-container {
+    max-width: 800px; /* 최대 너비 설정 */
+    max-height: 400px; /* 최대 높이 설정 */
+    overflow: auto; /* 스크롤바 표시 */
+  }
+  
+  .standings-table {
+    width: 100%; /* 테이블 너비 100%로 설정 */
+    border-collapse: collapse;
+    font-size: 16px;
+  }
+  
+  .standings-table th,
+  .standings-table td {
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #ccc;
+  }
+  
+  .standings-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+  }
+  
+  .standings-table tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+  
+  .standings-table tr:hover {
+    background-color: #ddd;
+  }
+  
+  .league-buttons {
+    margin-bottom: 20px;
+  }
+  
+  .league-button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    margin-right: 10px;
+  }
+  
+  .league-button.active {
+    background-color: #0056b3;
+  }
+  
+  .loading-text {
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 20px;
+  }
+  

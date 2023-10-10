@@ -20,14 +20,47 @@ import ChatRoomPage from './components/views/ChatPage/ChatRoomPage';
 import Chat from "./components/views/ChatPage/Chat"
 import UserList from './components/views/UserList/UserList';
 import Matching from "./components/views/Matching/matching";
+import EditPost from "./components/views/PostPage/EditPost"
+import TopScores from './components/views/TopPlayers/TopScores'
+import TopAssists from './components/views/TopPlayers/TopAssists';
 
 import Navbar from "./mainpage/Navbar";
+import TopPlayers from './components/views/TopPlayers/TopPlayers';
+import TeamRank from "./components/views/TeamRank/TeamRank";
+
+import Space1 from './components/views/HomPage/Space1';
+import Space2 from './components/views/HomPage/Space2';
+import Space3 from './components/views/HomPage/Space3';
+import Space4 from './components/views/HomPage/Space4';
+import './components/views/HomPage/Quadrants.css';
+
+
+/* 홈페이지 레이아웃 사분면으로 구현 */
+function Quadrants() {
+  return (
+    <div className="container">
+      <div className="quadrant" id="quadrant1" style={{ width: '100%', height: '100%' }}>
+        <Space1 />
+      </div>
+      <div className="quadrant" id="quadrant2" style={{ width: '100%', height: '100%' }}>
+        <Space2 />
+      </div>
+      <div className="quadrant" id="quadrant3" style={{ width: '100%', height: '100%' }}>
+        <Space3 />
+      </div>
+      <div className="quadrant" id="quadrant4" style={{ width: '100%', height: '100%' }}>
+        <Space4 />
+      </div>
+    </div>
+  );
+}
 
 function App() {
   return (
     <div>
       <Navbar />
       <Routes>
+        <Route path="/" element={<Quadrants />} />
         <Route exact path="/login" element={<LoginPage />} />
         <Route exact path="/register" element={<RegisterPage />} />
         {/* <Route exact path="/chat" element={<Chat_Page_Login />} /> */}
@@ -44,6 +77,8 @@ function App() {
         <Route exact path='/team' element={<Team />} />
         <Route exact path='/userlist' element={<UserList />} />
         <Route exact path="/usermatch" element={<Matching />} />
+        <Route path="/post/edit/:id" element={<EditPost />} />
+
       </Routes>
     </div>
   );

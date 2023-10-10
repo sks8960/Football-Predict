@@ -1,0 +1,11 @@
+.top-players-container {
+  width: 100%;
+  height: 500px;
+}
+
+.top-scores-table, .top-assists-table {
+  /* 테이블 스타일 */
+  width: 100%; /* 테이블 전체 폭을 조절하세요 */
+  height: 100%;
+  /* 원하는 스타일을 지정하세요 */
+}
