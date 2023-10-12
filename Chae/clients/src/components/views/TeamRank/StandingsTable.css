@@ -68,3 +68,8 @@
     margin-top: 20px;
   }
   
+  .table-row-link {
+    cursor: pointer;
+    padding: 0.5rem; /* 필요에 따라 패딩 조정 */
+    user-select: none;
+  }

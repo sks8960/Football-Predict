@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import './StandingsTable.css';
 
@@ -6,6 +7,11 @@ const StandingsTable = () => {
   const [leagueId, setLeagueId] = useState(39); // 초기 리그 ID (EPL)
   const [leagueData, setLeagueData] = useState({});
   const [loading, setLoading] = useState(false);
+
+  const linkStyle = {
+    color: 'black', // 링크 텍스트 색상을 검은색으로 지정
+    textDecoration: 'none', // 밑줄을 없앰
+  };
 
   const leagues = [
     { id: 39, name: 'EPL' },
@@ -88,7 +94,11 @@ const StandingsTable = () => {
               leagueData[leagueId].map((team, index) => (
                 <tr key={index}>
                   <td>{team.rank}</td>
-                  <td>{team.team.name}</td>
+                  <td>
+                  <Link to={`/team/${team.team.name}`} style={linkStyle}>
+                    {team.team.name}
+                  </Link>
+                </td>
                   <td>{team.all.played}</td>
                   <td>{team.all.win}</td>
                   <td>{team.all.draw}</td>

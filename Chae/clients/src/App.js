@@ -74,7 +74,7 @@ function App() {
         <Route exact path='/cal/ligue1' element={<CalLigue1 />} />
         <Route exact path='/cal/seriea' element={<CalSeriea />} />
         <Route exact path='/cal/bundesliga' element={<CalBundesliga />} />
-        <Route exact path='/team' element={<Team />} />
+        <Route exact path='/team/:teamName' element={<Team />} />
         <Route exact path='/userlist' element={<UserList />} />
         <Route exact path="/usermatch" element={<Matching />} />
         <Route path="/post/edit/:id" element={<EditPost />} />
