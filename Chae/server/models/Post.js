@@ -17,6 +17,7 @@ const postSchema = new mongoose.Schema({
     views: { type: Number, default: 0 }, // 조회수
     likeCount: { type: Number, default: 0 }, // 추천 개수
     dislikeCount: { type: Number, default: 0 }, // 비추천 개수
+    comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }],
 });
 
 const Post = mongoose.model('Post', postSchema);

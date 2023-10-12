@@ -10,6 +10,7 @@ const cors = require("cors");
 const { User } = require("./models/User");
 const { Post } = require("./models/Post");
 const { Room } = require("./models/Room.js");
+const { Comment } = require("./models/Comment.js");
 const bodyParser = require("body-parser");
 const coockieParser = require("cookie-parser");
 const { auth } = require("./middleware/auth");
@@ -530,7 +531,112 @@ app.delete('/api/posts/:id', async (req, res) => {
   }
 });
 // ================================================
+// 댓글 기능
 
+app.post('/api/posts/:postId/comments', async (req, res) => {
+  try {
+    const postId = req.params.postId;
+    const { text, author } = req.body; // 클라이언트에서 댓글 텍스트와 작성자 이름을 요청의 본문에서 가져옵니다.
+
+    // 댓글을 생성하고 Comment 모델에 저장합니다.
+    const newComment = new Comment({ text, author });
+    await newComment.save();
+
+    // 댓글을 해당 포스트의 comments 배열에 추가합니다.
+    const post = await Post.findById(postId);
+    post.comments.push(newComment);
+    await post.save();
+    res.status(201).json(newComment); // 생성된 댓글을 클라이언트에 반환합니다.
+  } catch (error) {
+    console.error('Error creating comment:', error);
+    res.status(500).json({ error: '댓글을 생성하는 동안 오류가 발생했습니다.' });
+  }
+});
+
+
+// 서버의 API 라우터에 추가
+app.get('/api/posts/:postId/comments', async (req, res) => {
+  try {
+    const postId = req.params.postId;
+    // 해당 포스트의 댓글 목록을 가져오는 코드
+    const comments = await Comment.find({ postId: postId.toString() });
+    // postId로 필터링하여 해당 포스트의 댓글만 가져옵니다.
+    res.status(200).json(comments);
+  } catch (error) {
+    console.error('Error fetching comments:', error);
+    res.status(500).json({ error: '댓글을 불러오는 동안 오류가 발생했습니다.' });
+  }
+});
+
+app.get('/api/comments/:commentId', async (req, res) => {
+  try {
+    // 댓글 ID를 파라미터에서 가져옴
+    const { commentId } = req.params;
+    // 댓글 ID로 댓글을 데이터베이스에서 조회
+    const comment = await Comment.findById(commentId.toString());
+    if (!comment) {
+      return res.status(404).json({ error: '댓글을 찾을 수 없습니다.' });
+    }
+    // 댓글 내용을 클라이언트에 반환
+    res.json(comment);
+  } catch (error) {
+    console.error('Error fetching comment:', error);
+    res.status(500).json({ error: '댓글을 가져오는 중에 오류가 발생했습니다.' });
+  }
+});
+// 댓글 삭제 엔드포인트
+
+app.delete('/api/posts/:postId/comments/:commentId', async (req, res) => {
+  const postId = req.params.postId;
+  const commentId = req.params.commentId;
+
+  try {
+    // postId와 commentId를 사용하여 댓글을 찾음
+    const comment = await Comment.findOne({ _id: commentId });
+
+    if (!comment) {
+      // 댓글을 찾지 못한 경우
+      return res.status(404).json({ message: '댓글을 찾을 수 없습니다.' });
+    }
+
+    // 댓글을 삭제
+    await Comment.deleteOne({ _id: commentId });
+
+    // 댓글 삭제가 성공한 경우
+    // 해당 게시물의 comments 배열에서도 삭제
+    await Post.updateOne(
+      { _id: postId },
+      { $pull: { comments: commentId } }
+    );
+
+    res.status(204).send();
+  } catch (error) {
+    // 에러 처리
+    console.error('Error deleting comment:', error);
+    res.status(500).json({ message: '댓글 삭제 중에 오류가 발생했습니다.' });
+  }
+});
+
+app.put('/api/posts/:id', async (req, res) => {
+  const postId = req.params.id;
+  const { content } = req.body;
+
+  try {
+    // 게시물을 불러오고 수정
+    const post = await Post.findByIdAndUpdate(postId, { content }, { new: true });
+
+    if (!post) {
+      return res.status(404).json({ error: '게시물을 찾을 수 없습니다.' });
+    }
+
+    res.json(post);
+  } catch (error) {
+    console.error('Error editing post:', error);
+    res.status(500).json({ error: '게시물 수정 중 오류가 발생했습니다.' });
+  }
+});
+
+// 달력  ===========================================================================
 app.get("/cal/cal/epl", (req, res) => {
   const options = {
     method: "GET",
