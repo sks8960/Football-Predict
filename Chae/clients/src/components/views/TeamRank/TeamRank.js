@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './StandingsTable.css'
+import './StandingsTable.css';
 
 const StandingsTable = () => {
   const [leagueId, setLeagueId] = useState(39); // 초기 리그 ID (EPL)
@@ -69,9 +69,7 @@ const StandingsTable = () => {
           </button>
         ))}
       </div>
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
+      <div className="table-container">
         <table className="standings-table">
           <thead>
             <tr>
@@ -106,7 +104,7 @@ const StandingsTable = () => {
             )}
           </tbody>
         </table>
-      )}
+      </div>
     </div>
   );
 };

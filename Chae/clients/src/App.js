@@ -42,14 +42,14 @@ function Quadrants() {
       <div className="quadrant" id="quadrant1" style={{ width: '100%', height: '100%' }}>
         <Space1 />
       </div>
-      <div className="quadrant" id="quadrant2" style={{ width: '100%', height: '100%' }}>
-        <Space2 />
+      <div className="table-container" id="quadrant2" style={{ width: '100%', height: '100%' }}>
+        <TopPlayers />
       </div>
       <div className="quadrant" id="quadrant3" style={{ width: '100%', height: '100%' }}>
         <Space3 />
       </div>
-      <div className="quadrant" id="quadrant4" style={{ width: '100%', height: '100%' }}>
-        <Space4 />
+      <div className="table-container" id="quadrant4" style={{ width: '100%', height: '100%' }}>
+        <TeamRank />
       </div>
     </div>
   );

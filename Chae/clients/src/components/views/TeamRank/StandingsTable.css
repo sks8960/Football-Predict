@@ -4,12 +4,20 @@
     max-width: 800px; /* 최대 너비 설정 */
     max-height: 400px; /* 최대 높이 설정 */
     overflow: auto; /* 스크롤바 표시 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .table-container {
+    overflow: auto; /* 내용이 넘칠 때 스크롤 표시 */
+    width: 100%; /* 테이블 너비를 100%로 설정하여 전체 너비 활용 */
   }
   
   .standings-table {
     width: 100%; /* 테이블 너비 100%로 설정 */
     border-collapse: collapse;
-    font-size: 16px;
+    margin: 0 auto;
   }
   
   .standings-table th,
@@ -37,12 +45,17 @@
   }
   
   .league-button {
-    padding: 10px 20px;
+    padding: 5px 40px;
     background-color: #007bff;
     color: #fff;
     border: none;
     cursor: pointer;
     margin-right: 10px;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    flex: 1;
+    margin: 0 5px; /* 각 버튼의 좌우 여백 조정 */
   }
   
   .league-button.active {
