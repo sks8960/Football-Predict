@@ -7,7 +7,7 @@ import './Space2.css';
 const Space2 = () => {
   return (
     <div className="space2">
-      <TopPlayers />
+
     </div>
   );
 };

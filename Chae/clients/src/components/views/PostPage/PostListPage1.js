@@ -44,9 +44,13 @@ function PostListPage1() {
         if (isAuthenticated) {
             navigate('/post/create');
         } else {
-            setShowLoginAlert(true);
+            // 로그인하지 않은 경우 alert 창을 띄우고 확인 버튼을 누르면 로그인 페이지로 이동합니다.
+            alert('로그인이 필요합니다.');
+            window.location.href = '/login'; // 이동할 주소를 로그인 페이지 주소로 변경하세요.
         }
     };
+
+
 
     const handleSearch = () => {
         axios.get(`/api/posts/${selectedCategory}/${searchQuery}`)
@@ -59,40 +63,77 @@ function PostListPage1() {
     };
 
     return (
-        <div>
+        <div className='post-list-container'>
             <h1>게시판</h1>
-            <div className="post-create-button-container">
-                <button onClick={goToCreatePage}>글 작성</button>
-                {showLoginAlert && <p>로그인이 필요합니다.</p>}
-            </div>
+            {/* <div className="post-create-button-container">
+                <button className="create-post-button" onClick={goToCreatePage}>글 작성</button>
+            </div> */}
             <div className="category-buttons">
-                <button onClick={() => setSelectedCategory('epl')}>EPL</button>
-                <button onClick={() => setSelectedCategory('esp')}>ESP</button>
-                <button onClick={() => setSelectedCategory('ita')}>ITA</button>
-                <button onClick={() => setSelectedCategory('ger')}>GER</button>
+                <button
+                    className={`category-button ${selectedCategory === 'epl' ? 'active' : ''}`}
+                    onClick={() => setSelectedCategory('epl')}
+                >
+                    EPL
+                </button>
+                <button
+                    className={`category-button ${selectedCategory === 'esp' ? 'active' : ''}`}
+                    onClick={() => setSelectedCategory('esp')}
+                >
+                    ESP
+                </button>
+                <button
+                    className={`category-button ${selectedCategory === 'ita' ? 'active' : ''}`}
+                    onClick={() => setSelectedCategory('ita')}
+                >
+                    ITA
+                </button>
+                <button
+                    className={`category-button ${selectedCategory === 'ger' ? 'active' : ''}`}
+                    onClick={() => setSelectedCategory('ger')}
+                >
+                    GER
+                </button>
                 {/* 다른 카테고리 버튼들 추가 */}
             </div>
-            <div className="search-bar">
-                <input
-                    type="text"
-                    placeholder="제목으로 검색"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                />
-                <button onClick={handleSearch}>검색</button>
-            </div>
-            <div className="post-grid">
-                {posts.map(post => (
-                    <div key={post._id} className="post-card" onClick={() => viewPost(post._id)}>
-                        <h2>{post.title}</h2>
-                        <p>{post.category}</p>
-                        <p>글쓴이: {post.username}</p>
-                        <p>날짜: {post.time}</p>
-                        <p>조회: {post.views}</p>
-                        <p>추천: {post.likeCount}</p>
-                        <p>비추천: {post.dislikeCount}</p>
-                    </div>
-                ))}
+            <table className="post-table">
+                <thead>
+                    <tr>
+                        <th>카테고리</th>
+                        <th>제목</th>
+                        <th>글쓴이</th>
+                        <th>날짜</th>
+                        <th>조회수</th>
+                        <th>추천</th>
+                        <th>비추천</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {posts.map(post => (
+                        <tr key={post._id} onClick={() => viewPost(post._id)}>
+                            <td className={`post-card ${post.category}`}>{post.category}</td>
+                            <td>{post.title}</td>
+                            <td>{post.username}</td>
+                            <td>{post.time}</td>
+                            <td>{post.views}</td>
+                            <td>{post.likeCount}</td>
+                            <td>{post.dislikeCount}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+            <div>
+                <div className="post-create-button-container" display="flex">
+                    <button className="create-post-button" onClick={goToCreatePage}>글 작성</button>
+                </div>
+                <div className="search-bar">
+                    <input
+                        type="text"
+                        placeholder="제목으로 검색"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                    <button className="search-button" onClick={handleSearch}>검색</button>
+                </div>
             </div>
         </div>
     );

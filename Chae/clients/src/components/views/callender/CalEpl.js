@@ -3,6 +3,7 @@ import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import tippy from 'tippy.js';
 import 'tippy.js/dist/tippy.css';
+import './css/CalEpl.css';
 
 const CalEpl = () => {
     const calendarRef = useRef(null);
@@ -24,6 +25,7 @@ const CalEpl = () => {
     const eventDidMount = (info) => {
         const eventElement = info.el;
         const eventDate = info.event.start;
+
 
         if (eventElement.innerText.length > 10) {
             tippy(eventElement, {
@@ -71,16 +73,18 @@ const CalEpl = () => {
                 );
                 predictionPopup.focus();
             }
+
         });
     };
 
     return (
-        <div>
+        <div className='CalEpl'>
             <FullCalendar
                 ref={calendarRef}
                 plugins={[dayGridPlugin]}
                 initialView="dayGridMonth"
                 eventDidMount={eventDidMount}
+                Width="100%"
             />
         </div>
     );

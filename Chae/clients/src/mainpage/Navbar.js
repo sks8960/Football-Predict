@@ -4,9 +4,12 @@ import "./Navbar.css";
 import { navItems } from "./NavItems";
 import Button from "./Button";
 import Dropdown from "./Dropdown";
+// import PostDropdown from "./PostDropdown";
+
 
 function Navbar() {
   const [dropdown, setDropdown] = useState(false);
+  //const [postdropdown, setpostdropdown] = useState(false);
 
   return (
     <>
@@ -16,6 +19,19 @@ function Navbar() {
         </Link>
         <ul className="nav-items">
           {navItems.map((item) => {
+            // if (item.title === "게시판") {
+            //   return (
+            //     <li
+            //       key={item.id}
+            //       className={item.cName}
+            //       onMouseEnter={() => setpostdropdown(true)}
+            //       onMouseLeave={() => setpostdropdown(false)}
+            //     >
+            //       <Link to={item.path}>{item.title}</Link>
+            //       {postdropdown && <PostDropdown />}
+            //     </li>
+            //   )
+            // }  게시판 부분
             if (item.title === "리그 일정") {
               return (
                 <li
