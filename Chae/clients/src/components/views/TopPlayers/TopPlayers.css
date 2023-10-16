@@ -5,6 +5,7 @@
   margin-bottom: 50px;
   display: flex;
   flex-direction: column;
+  z-index: 100;
 }
 
 .top-scores-table, .top-assists-table {
@@ -18,7 +19,6 @@
   position: sticky;
   top: 0;
   background-color: white;
-  z-index: 1;
 }
 
 .table-container {
