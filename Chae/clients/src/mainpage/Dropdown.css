@@ -6,7 +6,6 @@
   text-align: start;
   right: 450px;
   z-index: 1;
-  z-index: 1;
 }
 
 .services-submenu li {
@@ -16,7 +15,7 @@
 
 .services-submenu li a:hover {
   background: rgb(0, 175, 175);
-  
+
 }
 
 .services-submenu.clicked {
