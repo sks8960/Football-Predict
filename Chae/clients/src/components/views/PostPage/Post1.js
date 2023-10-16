@@ -40,8 +40,7 @@ function Post1() {
     }, []); // 빈 의존성 배열
 
     useEffect(() => {
-        if (currentUserName && id) {
-            // currentUserName과 id가 설정된 경우에만 데이터를 가져오도록 설정
+        if (id) {
             axios.get(`/api/posts/${id}`)
                 .then(response => {
                     setPost(response.data);
@@ -63,6 +62,7 @@ function Post1() {
                 });
         }
     }, [id, currentUserName]);
+
 
     useEffect(() => {
         // comments가 변경될 때만 실행
@@ -213,19 +213,19 @@ function Post1() {
             <p className="post-content-1">{post.content}</p>
             <p className="post-time-1">{post.time}</p>
             <div className="post-buttons-1">
-                {currentUserName && (
+                {!currentUserName ? (
+                    // 로그인하지 않은 사용자의 경우 버튼을 비활성화
                     <>
-                        <button className="like-button-1" onClick={handleLike}>
-                            추천 {post.likeCount}
-                        </button>
-                        <span className="vote-count-1">
-                            {post.likeCount - post.dislikeCount}
-                        </span>
-                        <button className="dislike-button-1" onClick={handleDislike}>
-                            비추천 {post.dislikeCount}
-                        </button>
+                        <button className="like-button-1" disabled>추천 {post.likeCount}</button>
+                        <button className="dislike-button-1" disabled>비추천 {post.dislikeCount}</button>
+                    </>
+                ) : (
+                    <>
+                        <button className="like-button-1" onClick={handleLike}>추천 {post.likeCount}</button>
+                        <button className="dislike-button-1" onClick={handleDislike}>비추천 {post.dislikeCount}</button>
                     </>
                 )}
+
                 {isAuthor && (
                     <>
                         <button className="edit-button-1">

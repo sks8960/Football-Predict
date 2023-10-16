@@ -34,26 +34,24 @@ import Space3 from './components/views/HomPage/Space3';
 import Space4 from './components/views/HomPage/Space4';
 import './components/views/HomPage/Quadrants.css';
 
-
+import HotPost from './components/views/PostPage/HotPost'
 /* 홈페이지 레이아웃 사분면으로 구현 */
 function Quadrants() {
   return (
     <div className="container">
       <div className="quadrant" id="quadrant1" style={{ width: '100%', height: '100%' }}>
-        <Space1 />
-      </div>
-      <div className="table-container" id="quadrant2" style={{ width: '100%', height: '100%' }}>
         <TopPlayers />
       </div>
-      <div className="quadrant" id="quadrant3" style={{ width: '100%', height: '100%' }}>
-        <Space3 />
+      <div className="quadrant" id="quadrant2" style={{ width: '100%', height: '100%' }}>
+        <HotPost />
       </div>
-      <div className="table-container" id="quadrant4" style={{ width: '100%', height: '100%' }}>
+      <div className="quadrant" id="quadrant3" style={{ width: '100%', height: '100%' }}>
         <TeamRank />
       </div>
     </div>
   );
 }
+
 
 function App() {
   return (
