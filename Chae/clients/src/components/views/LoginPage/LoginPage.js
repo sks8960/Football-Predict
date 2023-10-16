@@ -27,7 +27,7 @@ function LoginPage() {
             .then(response => {
                 console.log(response)
                 if (response.payload.loginSuccess) {
-                    navigate('/');
+                    navigate(-1);
                 } else {
                     alert('Failed!!')
                 }

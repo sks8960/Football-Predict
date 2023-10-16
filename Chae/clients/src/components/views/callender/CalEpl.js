@@ -22,29 +22,36 @@ const CalEpl = () => {
             .catch((error) => failureCallback(error));
     };
 
-    const eventDidMount = (info) => {
-        const eventElement = info.el;
+    const eventContent = (info) => {
+        console.log(info.event)
         const eventDate = info.event.start;
+        const fixtureId = info.event.extendedProps.fixtureId;
 
+        const content = document.createElement('div');
+        content.className = 'custom-event-content';
 
-        if (eventElement.innerText.length > 10) {
-            tippy(eventElement, {
-                content: eventElement.innerText,
-                placement: 'top',
-                maxWidth: 200,
-            });
-        }
+        // 여기서 이벤트 정보로부터 homeLogo, awayLogo를 가져옵니다.
+        const { homeLogo, awayLogo } = info.event.extendedProps.title;
 
-        eventElement.addEventListener('click', () => {
+        // 로고 이미지를 삽입합니다.
+        content.innerHTML = `
+            <div class="team-logo">
+                <img src="${homeLogo}" alt="Home Team Logo" />
+            </div>
+            <div class="team-logo">
+                <img src="${awayLogo}" alt="Away Team Logo" />
+            </div>
+        `;
+
+        content.addEventListener('click', () => {
             const today = new Date();
-            const fixtureId = info.event.extendedProps.fixtureId;
 
             fetch('http://localhost:5000/save-fixture', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                credentials: "include",
+                credentials: 'include',
                 body: JSON.stringify({ fixtureId: fixtureId }),
             })
                 .then((response) => {
@@ -73,18 +80,19 @@ const CalEpl = () => {
                 );
                 predictionPopup.focus();
             }
-
         });
+
+        return { domNodes: [content] };
     };
 
     return (
-        <div className='CalEpl'>
+        <div className="CalEpl">
             <FullCalendar
                 ref={calendarRef}
                 plugins={[dayGridPlugin]}
                 initialView="dayGridMonth"
-                eventDidMount={eventDidMount}
-                Width="100%"
+                eventContent={eventContent}
+                width="100%"
             />
         </div>
     );

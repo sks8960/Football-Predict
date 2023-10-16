@@ -479,6 +479,41 @@ app.post("/api/posts/:id/cancelLike", auth, async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
+app.get("/api/hotposts", async (req, res) => {
+  try {
+    const now = new Date(); // 현재 시간
+
+    // 24시간 이내 게시물을 가져오기 위한 날짜 계산
+    const oneDayAgo = new Date(now);
+    oneDayAgo.setDate(now.getDate() - 1);
+
+    const posts = await Post.aggregate([
+      {
+        $match: {
+          time: { $gt: oneDayAgo }, // 24시간 이내 게시물 필터링
+        },
+      },
+      {
+        $addFields: {
+          score: {
+            $add: [
+              { $multiply: ["$likeCount", 0.5] },
+              { $multiply: ["$dislikeCount", -0.5] },
+              { $multiply: ["$views", 0.5] },
+            ],
+          },
+        },
+      },
+      { $sort: { score: -1 } }, // 점수 내림차순 정렬
+      { $limit: 10 }, // 최대 10개 게시물만 선택
+    ]);
+
+    res.status(200).json(posts);
+  } catch (error) {
+    console.error("Error fetching posts:", error);
+    res.status(500).json({ error: "Failed to fetch posts" });
+  }
+});
 // Cancel Dislike for a post
 app.post("/api/posts/:id/cancelDislike", auth, async (req, res) => {
   const postId = req.params.id;
@@ -650,7 +685,7 @@ app.get("/cal/cal/epl", (req, res) => {
       "x-rapidapi-key": "96e6fbd9e1msh363fb680c23119fp131a0ajsn8edccdfdd332",
       "x-rapidapi-host": "api-football-v1.p.rapidapi.com",
       useQueryString: true,
-    },
+    }
   };
 
   axios
@@ -659,7 +694,12 @@ app.get("/cal/cal/epl", (req, res) => {
       const fixtures = response.data.response;
 
       const events = fixtures.map((fixture) => ({
-        title: `${fixture.teams.home.name} vs ${fixture.teams.away.name}`,
+        title: {
+          homeLogo: fixture.teams.home.logo,
+          awayLogo: fixture.teams.away.logo,
+          homeName: fixture.teams.home.name,
+          awayName: fixture.teams.away.name,
+        },
         start: moment.utc(fixture.fixture.date).format(),
         end: moment.utc(fixture.fixture.date).format(),
         fixtureId: fixture.fixture.id,
@@ -672,6 +712,7 @@ app.get("/cal/cal/epl", (req, res) => {
       res.status(500).json({ error: "Failed to fetch fixtures" });
     });
 });
+
 app.get("/cal/cal/laliga", (req, res) => {
   const options = {
     method: "GET",
