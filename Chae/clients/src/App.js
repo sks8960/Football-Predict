@@ -35,6 +35,8 @@ import Space4 from './components/views/HomPage/Space4';
 import './components/views/HomPage/Quadrants.css';
 
 import HotPost from './components/views/PostPage/HotPost'
+
+import Footer from './components/views/Footer/Footer'
 /* 홈페이지 레이아웃 사분면으로 구현 */
 function Quadrants() {
   return (
@@ -51,7 +53,6 @@ function Quadrants() {
     </div>
   );
 }
-
 
 function App() {
   return (
@@ -78,6 +79,7 @@ function App() {
         <Route path="/post/edit/:id" element={<EditPost />} />
 
       </Routes>
+      <Footer />
     </div>
   );
 }

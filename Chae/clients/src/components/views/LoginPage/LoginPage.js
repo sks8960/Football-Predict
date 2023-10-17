@@ -1,22 +1,26 @@
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { loginUser } from '../../../_actions/user_action'
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom"
 import Auth from "../../../hoc/auth"
-function LoginPage() {
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
+import './Login.css'
+
+const LoginPage = () => {
+    const navigate = useNavigate()
+    const dispatch = useDispatch()
     const [Email, setEmail] = useState("")
     const [Password, setPassword] = useState("")
 
     const onEmailHandler = (event) => {
         setEmail(event.currentTarget.value)
     }
+    
     const onPasswordHandler = (event) => {
         setPassword(event.currentTarget.value)
     }
+    
     const onSubmitHandler = (event) => {
-        event.preventDefault();
+        event.preventDefault()
 
         let body = {
             email: Email,
@@ -25,35 +29,37 @@ function LoginPage() {
 
         dispatch(loginUser(body))
             .then(response => {
-                console.log(response)
                 if (response.payload.loginSuccess) {
-                    navigate(-1);
+                    navigate(-1)
                 } else {
-                    alert('Failed!!')
+                    alert('Login failed!!')
                 }
             })
     }
 
     return (
-        <div style={{
-            display: 'flex', justifyContent: 'center', alignItems: 'center',
-            width: "100%", height: "100vh"
-        }}>
-
-            <form style={{ display: "flex", flexDirection: 'column' }}
-                onSubmit={onSubmitHandler}>
-                <label>Email</label>
-                <input type='email' value={Email} onChange={onEmailHandler}></input>
-                <label>Password</label>
-                <input type='password' value={Password} onChange={onPasswordHandler}></input>
-                <br />
-                <button style={{}}>
+        <div className="login-container">
+            <form className="login-form" onSubmit={onSubmitHandler}>
+                <label htmlFor="email">Email</label>
+                <input
+                    type='email'
+                    id="email"
+                    value={Email}
+                    onChange={onEmailHandler}
+                />
+                <label htmlFor="password">Password</label>
+                <input
+                    type='password'
+                    id="password"
+                    value={Password}
+                    onChange={onPasswordHandler}
+                />
+                <button className="login-button" type="submit">
                     Login
                 </button>
             </form>
-
         </div>
     )
 }
 
-export default Auth(LoginPage, false);
+export default Auth(LoginPage, false)

@@ -95,7 +95,7 @@ function PostListPage1() {
                 </button>
                 {/* 다른 카테고리 버튼들 추가 */}
             </div>
-            <table className="post-table">
+            <table className="post-table" style={tableStyle}>
                 <thead>
                     <tr>
                         <th>카테고리</th>
@@ -121,22 +121,46 @@ function PostListPage1() {
                     ))}
                 </tbody>
             </table>
-            <div>
-                <div className="post-create-button-container" display="flex">
-                    <button className="create-post-button" onClick={goToCreatePage}>글 작성</button>
-                </div>
-                <div className="search-bar">
-                    <input
-                        type="text"
-                        placeholder="제목으로 검색"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                    <button className="search-button" onClick={handleSearch}>검색</button>
-                </div>
+            <div className="post-create-search-container" style={flexContainerStyle}>
+            <div className="search-bar" style={flexItemStyle}>
+                <input
+                    type="text"
+                    placeholder="제목으로 검색"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                />
+                <button className="search-button" style={buttonStyle1} onClick={handleSearch}>검색</button>
             </div>
+            <button className="create-post-button" style={buttonStyle2} onClick={goToCreatePage}>글 작성</button>
         </div>
-    );
+    </div>
+);
 }
+
+const flexContainerStyle = {
+    display: 'flex',
+    justifyContent: 'space-between', // 좌우로 배치
+  };
+  
+  const flexItemStyle = {
+    flex: '1', // 좌측 요소가 확장됨
+  };
+
+  const buttonStyle1 = {
+    padding: '10px 20px', // 버튼 내용과 상하좌우 여백을 추가합니다
+    width: '80px', // 버튼 폭
+    height: '40px', // 버튼 높이
+  };
+
+  const buttonStyle2 = {
+    padding: '10px 20px', // 버튼 내용과 상하좌우 여백을 추가합니다
+    width: '100px', // 버튼 폭
+    height: '40px', // 버튼 높이
+  };
+  
+  const tableStyle = {
+    marginTop: '20px', // 테이블 위쪽에 여백을 추가합니다
+    marginBottom: '20px',
+  };
 
 export default PostListPage1;
