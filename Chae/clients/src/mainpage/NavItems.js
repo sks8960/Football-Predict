@@ -57,3 +57,36 @@ export const serviceDropdown = [
     cName: "submenu-item",
   },
 ];
+
+export const postDropdown = [
+  {
+    id: 1,
+    title: "EPL",
+    path: "./posts/epl",
+    cName: "submenu-item",
+  },
+  {
+    id: 2,
+    title: "La Liga",
+    path: "./epl/laliga",
+    cName: "submenu-item",
+  },
+  {
+    id: 3,
+    title: "BundesLiga",
+    path: "./cal/bundesliga",
+    cName: "submenu-item",
+  },
+  {
+    id: 4,
+    title: "SerieA",
+    path: "./cal/seriea",
+    cName: "submenu-item",
+  },
+  {
+    id: 5,
+    title: "Ligue1",
+    path: "./cal/ligue1",
+    cName: "submenu-item",
+  },
+];

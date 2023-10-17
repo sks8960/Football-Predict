@@ -34,26 +34,24 @@ import Space3 from './components/views/HomPage/Space3';
 import Space4 from './components/views/HomPage/Space4';
 import './components/views/HomPage/Quadrants.css';
 
-
+import HotPost from './components/views/PostPage/HotPost'
 /* 홈페이지 레이아웃 사분면으로 구현 */
 function Quadrants() {
   return (
     <div className="container">
       <div className="quadrant" id="quadrant1" style={{ width: '100%', height: '100%' }}>
-        <Space1 />
+        <TopPlayers />
       </div>
       <div className="quadrant" id="quadrant2" style={{ width: '100%', height: '100%' }}>
-        <Space2 />
+        <HotPost />
       </div>
       <div className="quadrant" id="quadrant3" style={{ width: '100%', height: '100%' }}>
-        <Space3 />
-      </div>
-      <div className="quadrant" id="quadrant4" style={{ width: '100%', height: '100%' }}>
-        <Space4 />
+        <TeamRank />
       </div>
     </div>
   );
 }
+
 
 function App() {
   return (
@@ -74,7 +72,7 @@ function App() {
         <Route exact path='/cal/ligue1' element={<CalLigue1 />} />
         <Route exact path='/cal/seriea' element={<CalSeriea />} />
         <Route exact path='/cal/bundesliga' element={<CalBundesliga />} />
-        <Route exact path='/team' element={<Team />} />
+        <Route exact path='/team/:teamName' element={<Team />} />
         <Route exact path='/userlist' element={<UserList />} />
         <Route exact path="/usermatch" element={<Matching />} />
         <Route path="/post/edit/:id" element={<EditPost />} />

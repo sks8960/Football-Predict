@@ -1,39 +1,185 @@
-.post-card {
-  border: 1px solid #ccc;
+.post-list-container {
+  max-width: 1200px;
+  margin: 0 20%;
   padding: 20px;
-  background-color: #f9f9f9;
-  display: grid;
-  grid-template-columns: 1fr auto;
 }
 
-.post-title {
-  grid-column: 1;
+.post-table {
+  width: 100%;
+  /* 테이블 너비를 60%로 설정 */
+  /*margin: 20px 20%;
+  /* 왼쪽 20%, 오른쪽 20% 여백 */
+  border-collapse: collapse;
 }
 
-.post-time {
-  grid-column: 2;
-  text-align: right;
+/* 나머지 스타일들... */
+
+
+h1 {
+  font-size: 28px;
+  font-weight: bold;
+  color: #333;
 }
 
-.post-content {
-  grid-column: 1 / span 2;
+.create-post-button {
+  background-color: #0077FF;
+  color: #fff;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
-.post-container {
+.create-post-button:hover {
+  background-color: #0055CC;
+}
+
+.category-buttons {
+  text-align: center;
+}
+
+.category-button {
+  background-color: #f15e39;
+  color: #fff;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  margin: 0 10px;
+  cursor: pointer;
+}
+
+.category-button:hover {
+  background-color: #e24927;
+}
+
+.search-bar {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
+  text-align: right;
+  margin-bottom: 20px;
 }
 
-.post-container h1 {
+input#search-input {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  flex-grow: 1;
   margin-right: 10px;
 }
 
-.post-container button {
-  margin-left: 10px;
+
+button.search-button {
+  background-color: #0077FF;
+  color: #fff;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button.search-button:hover {
+  background-color: #0055CC;
+}
+
+
+th,
+td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+}
+
+th {
+  background-color: #f0f0f0;
+}
+
+/* 게시물 카테고리별 색상 설정을 원하면 추가 가능 */
+
+/* 선택된 탭에 대한 스타일 */
+.category-button.active {
+  background-color: #0077FF;
+  /* 선택된 탭 배경색 */
+  color: #fff;
+  /* 선택된 탭 글자색 */
+}
+
+/* 나머지 탭의 스타일 */
+.category-button {
+  background-color: #f15e39;
+  color: #fff;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  margin: 0 10px;
+  cursor: pointer;
+}
+
+/* 검색 버튼 스타일 */
+.search-button {
+  background-color: #0077FF;
+  color: #fff;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* 검색 버튼 hover 스타일 */
+.search-button:hover {
+  background-color: #0055CC;
+}
+
+
+/* 게시물 제목 스타일링 */
+.post-title {
+  text-align: left;
+}
+
+/* 게시물 정보 스타일링 */
+.post-info {
+  text-align: left;
 }
 
 .post-create-button-container {
-  margin-left: auto;
+  text-align: right;
+  /* 오른쪽 정렬 */
+  margin-top: 20px;
 }
+
+/* EPL 카테고리 배경색 스타일 */
+.epl {
+  color: #0077FF;
+  /* 배경색: 파랑 */
+}
+
+/* ESP 카테고리 배경색 스타일 */
+.esp {
+  color: #FF0000;
+  /* 배경색: 빨강 */
+}
+
+/* ITA 카테고리 배경색 스타일 */
+.ita {
+  color: #000;
+  /* 배경색: 검정 */
+}
+
+/* GER 카테고리 배경색 스타일 */
+.ger {
+  color: #FFFF00;
+  /* 배경색: 노랑 */
+}
+
+
+
+/* 추가적인 스타일링은 필요에 따라 수정 가능 */

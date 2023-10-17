@@ -97,6 +97,7 @@ const TopPlayers = () => {
           <button className={`league-button ${currentLeague === 'ligue1' ? 'active' : ''}`} onClick={() => setCurrentLeague('ligue1')}>Ligue 1</button>
         </div>
       </div>
+      <div className='table-container'>
       {loading ? (
         <p>Loading...</p>
       ) : (
@@ -124,6 +125,7 @@ const TopPlayers = () => {
           </tbody>
         </table>
       )}
+    </div>
     </div>
   );
 };
