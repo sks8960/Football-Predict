@@ -694,12 +694,7 @@ app.get("/cal/cal/epl", (req, res) => {
       const fixtures = response.data.response;
 
       const events = fixtures.map((fixture) => ({
-        title: {
-          homeLogo: fixture.teams.home.logo,
-          awayLogo: fixture.teams.away.logo,
-          homeName: fixture.teams.home.name,
-          awayName: fixture.teams.away.name,
-        },
+        title: `${fixture.teams.home.name} vs ${fixture.teams.away.name}`,
         start: moment.utc(fixture.fixture.date).format(),
         end: moment.utc(fixture.fixture.date).format(),
         fixtureId: fixture.fixture.id,
