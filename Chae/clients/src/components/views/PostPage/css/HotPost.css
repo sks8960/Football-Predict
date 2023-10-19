@@ -1,0 +1,6 @@
+.custom-link {
+    text-decoration: none;
+    /* Remove underline */
+    color: #000;
+    /* Change link color */
+}

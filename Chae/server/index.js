@@ -965,7 +965,7 @@ app.get("/cal/predict/:fixtureId", async (req, res) => {
 });
 
 
-
+// 팀분석
 app.get("/teams/:teamName", (req, res) => {
   const teamName = req.params.teamName;
   db.query(
@@ -1107,6 +1107,9 @@ app.get("/teams/:teamName", (req, res) => {
     }
   );
 });
+
+
+// 채팅
 const rooms = {};
 var count = 0;
 

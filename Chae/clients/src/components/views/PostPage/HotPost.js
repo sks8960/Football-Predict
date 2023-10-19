@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
+import './css/HotPost.css'
 
 function getTimeDifference(time) {
     const currentTime = new Date();
@@ -28,12 +30,14 @@ function PostList() {
             <ol>
                 {posts.map((post) => (
                     <li key={post._id}>
-                        <p>
-                            {post.title}[{post.comments.length}] (작성자: {post.username})
-                            작성 시간: {getTimeDifference(post.time)}
-                            Likes: {post.likeCount}
-                            Dislikes: {post.dislikeCount}
-                        </p>
+                        <Link to={`/post/${post._id}`} className="custom-link">
+                            <p>
+                                {post.title}[{post.comments.length}] (작성자: {post.username})
+                                작성 시간: {getTimeDifference(post.time)}
+                                Likes: {post.likeCount}
+                                Dislikes: {post.dislikeCount}
+                            </p>
+                        </Link>
                     </li>
                 ))}
             </ol>

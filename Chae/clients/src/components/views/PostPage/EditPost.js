@@ -39,7 +39,7 @@ function EditPost() {
 
     return (
         <div className="edit-post-container">
-            <h2>게시물 수정</h2>
+            <h2>{post.title}</h2>
             <textarea
                 rows="6"
                 value={newContent}

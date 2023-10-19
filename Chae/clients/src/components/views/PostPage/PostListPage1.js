@@ -113,7 +113,7 @@ function PostListPage1() {
                             <td className={`post-card ${post.category}`}>{post.category}</td>
                             <td>{post.title}</td>
                             <td>{post.username}</td>
-                            <td>{post.time}</td>
+                            <td>{formatDate(post.time)}</td> {/* 수정된 부분 */}
                             <td>{post.views}</td>
                             <td>{post.likeCount}</td>
                             <td>{post.dislikeCount}</td>
@@ -122,45 +122,59 @@ function PostListPage1() {
                 </tbody>
             </table>
             <div className="post-create-search-container" style={flexContainerStyle}>
-            <div className="search-bar" style={flexItemStyle}>
-                <input
-                    type="text"
-                    placeholder="제목으로 검색"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                />
-                <button className="search-button" style={buttonStyle1} onClick={handleSearch}>검색</button>
+                <div className="search-bar" style={flexItemStyle}>
+                    <input
+                        type="text"
+                        placeholder="제목으로 검색"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                    <button className="search-button" style={buttonStyle1} onClick={handleSearch}>검색</button>
+                </div>
+                <button className="create-post-button" style={buttonStyle2} onClick={goToCreatePage}>글 작성</button>
             </div>
-            <button className="create-post-button" style={buttonStyle2} onClick={goToCreatePage}>글 작성</button>
         </div>
-    </div>
-);
+    );
 }
+const formatDate = (time) => {
+    const options = {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+    };
+
+    const formattedDate = new Date(time).toLocaleDateString('en-US', options);
+
+    return formattedDate;
+};
+
 
 const flexContainerStyle = {
     display: 'flex',
     justifyContent: 'space-between', // 좌우로 배치
-  };
-  
-  const flexItemStyle = {
-    flex: '1', // 좌측 요소가 확장됨
-  };
+};
 
-  const buttonStyle1 = {
+const flexItemStyle = {
+    flex: '1', // 좌측 요소가 확장됨
+};
+
+const buttonStyle1 = {
     padding: '10px 20px', // 버튼 내용과 상하좌우 여백을 추가합니다
     width: '80px', // 버튼 폭
     height: '40px', // 버튼 높이
-  };
+};
 
-  const buttonStyle2 = {
+const buttonStyle2 = {
     padding: '10px 20px', // 버튼 내용과 상하좌우 여백을 추가합니다
     width: '100px', // 버튼 폭
     height: '40px', // 버튼 높이
-  };
-  
-  const tableStyle = {
+};
+
+const tableStyle = {
     marginTop: '20px', // 테이블 위쪽에 여백을 추가합니다
     marginBottom: '20px',
-  };
+};
 
 export default PostListPage1;

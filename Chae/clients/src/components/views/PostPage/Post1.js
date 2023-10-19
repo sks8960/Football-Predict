@@ -211,7 +211,7 @@ function Post1() {
         <div className="post-container-1">
             <h2 className="post-title-1">{post.title}</h2>
             <p className="post-content-1">{post.content}</p>
-            <p className="post-time-1">{post.time}</p>
+            <p className="post-time-1">{formatDate(post.time)}</p>
             <div className="post-buttons-1">
                 {!currentUserName ? (
                     // 로그인하지 않은 사용자의 경우 버튼을 비활성화
@@ -261,7 +261,7 @@ function Post1() {
                             <li key={comment._id}>
                                 <div className="comment-header">
                                     <p className="comment-author">{comment.author}</p>
-                                    <p className="comment-time">{comment.createdAt}</p>
+                                    <p className="comment-time">{formatDate(comment.createdAt)}</p>
                                     {comment.author === currentUserName && (
                                         <button
                                             className="delete-comment-button"
@@ -285,5 +285,18 @@ function Post1() {
         </div>
     );
 }
+const formatDate = (time) => {
+    const options = {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+    };
+
+    const formattedDate = new Date(time).toLocaleDateString('en-US', options);
+
+    return formattedDate;
+};
 
 export default Post1;

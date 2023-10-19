@@ -40,7 +40,8 @@ function PostCreatePage() {
     }, [location.search]);
 
     const createPost = () => {
-        const currentTime = new Date().toISOString();
+        const currentTime = new Date().toLocaleString('en-US', { timeZone: 'Asia/Seoul' });
+
         axios
             .post('/api/posts', { title, content, category, time: currentTime, username: name })
             .then(response => {

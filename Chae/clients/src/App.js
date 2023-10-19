@@ -40,15 +40,23 @@ import Footer from './components/views/Footer/Footer'
 /* 홈페이지 레이아웃 사분면으로 구현 */
 function Quadrants() {
   return (
-    <div className="container">
-      <div className="quadrant" id="quadrant1" style={{ width: '100%', height: '100%' }}>
-        <TopPlayers />
-      </div>
-      <div className="quadrant" id="quadrant2" style={{ width: '100%', height: '100%' }}>
+    <div style={{ display: 'flex', height: '100vh' }}>
+      {/* 왼쪽 절반 (Space1) */}
+      <div style={{ flex: 1, backgroundColor: "yellow" }}>
         <HotPost />
       </div>
-      <div className="quadrant" id="quadrant3" style={{ width: '100%', height: '100%' }}>
-        <TeamRank />
+
+      {/* 오른쪽 절반을 가로로 나눔 */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+        {/* 위쪽 절반 (Space2) */}
+        <div style={{ flex: 1, backgroundColor: "green" }}>
+          <TopPlayers />
+        </div>
+
+        {/* 아래쪽 절반 (Space3) */}
+        <div style={{ flex: 1, backgroundColor: "orange" }}>
+          <TeamRank />
+        </div>
       </div>
     </div>
   );

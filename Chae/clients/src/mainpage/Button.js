@@ -22,7 +22,7 @@ function Button() {
     };
 
     checkAuthStatus();
-  }, []);
+  }, []); // 빈 배열로 전달하면 컴포넌트가 마운트될 때 한 번만 실행됩니다.
 
   const handleLogout = async () => {
     try {
