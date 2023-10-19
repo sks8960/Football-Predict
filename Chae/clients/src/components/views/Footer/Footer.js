@@ -15,7 +15,7 @@ function Footer() {
   
   // 스타일 객체를 만듭니다.
   const footerStyle = {
-    position: 'fixed', // 화면 아래에 고정
+    
     bottom: 0, // 화면 하단에 배치
     width: '100%', // 가로 폭 100%
     background: '#333',

@@ -3,6 +3,7 @@ import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import tippy from 'tippy.js';
 import 'tippy.js/dist/tippy.css';
+import './css/Cal.css'
 
 const CalEpl = () => {
     const calendarRef = useRef(null);
@@ -75,12 +76,16 @@ const CalEpl = () => {
     };
 
     return (
-        <div>
+        <div className='Cal'>
             <FullCalendar
                 ref={calendarRef}
                 plugins={[dayGridPlugin]}
                 initialView="dayGridMonth"
                 eventDidMount={eventDidMount}
+                dayMaxEventRows={5}
+                Width="100%"
+                height="800px"
+                aspectRatio={1.5}
             />
         </div>
     );
