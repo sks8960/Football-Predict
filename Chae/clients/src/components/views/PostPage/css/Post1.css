@@ -2,6 +2,7 @@
 
 .post-container-1 {
     max-width: 800px;
+    height: 1000px;
     margin: 0 auto;
     padding: 20px;
     background-color: #fff;
@@ -83,9 +84,18 @@
     right: 10px;
   }
   
-  .comment-section {
-    margin-top: 30px;
-  }
+  .comment-input {
+    display: flex;
+    flex-direction: row; /* Arrange elements horizontally */
+    align-items: center; /* Vertically center elements within the div */
+}
+
+.comment-input textarea {
+    flex: 1; /* Allow the textarea to expand and fill available space */
+    margin-right: 10px; /* Add space between textarea and button */
+}
+
+  
   
   .comment-button {
     background-color: #007bff;
@@ -95,41 +105,67 @@
     padding: 10px 20px;
     font-weight: bold;
     cursor: pointer;
+    width: 80px; /* Adjust the width of the button as needed */
+    height: 70px;
   }
   
   .comments {
-    margin-top: 20px;
-    padding: 10px;
-    background-color: #f9f9f9;
-    border: 1px solid #e0e0e0;
+    margin-top: 30px;
+    border: 1px solid #ddd;
+    padding: 20px;
     border-radius: 5px;
-  }
-  
-  .comment-header {
+    background-color: #f9f9f9;
+}
+
+.comments h4 {
+    font-size: 1.2em;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+/* 별도의 클래스로 ul 및 li 스타일 지정 */
+.comment-ul {
+  list-style: none;
+  padding: 0;
+}
+
+.comment-li {
+  margin: 10px 0;
+  padding: 10px;
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+}
+
+
+.comment-header {
     display: flex;
     justify-content: space-between;
-  }
-  
-  .comment-author {
-    font-weight: bold;
-  }
-  
-  .comment-time {
-    color: #888;
-  }
-  
-  .comment-text {
-    font-size: 16px;
+    align-items: center;
+}
+
+.comment-author {
+    font-weight: 600;
+    color: #0077b6;
+}
+
+.comment-time {
+    font-size: 0.9em;
+    color: #666;
+}
+
+.comment-text {
     margin-top: 10px;
-  }
-  
-  .delete-comment-button {
-    background-color: #dc3545;
+    font-size: 1em;
+    color: #333;
+}
+
+.delete-comment-button {
+    background-color: #ff4444;
     color: #fff;
     border: none;
-    border-radius: 5px;
     padding: 5px 10px;
-    font-weight: bold;
     cursor: pointer;
-  }
-  
+    margin-left: 10px;
+    border-radius: 5px;
+}

@@ -2,6 +2,7 @@
 
 .edit-post-container {
     max-width: 600px;
+    height: 730px;
     margin: 0 auto;
     padding: 20px;
     background-color: #fff;
@@ -16,13 +17,15 @@
   }
   
   .edit-post-container textarea {
-    width: 100%;
-    padding: 10px;
+    width: 90%;
     margin-bottom: 20px;
     border: 1px solid #ccc;
     border-radius: 5px;
     font-size: 16px;
+    /* 좌우 10px의 패딩 추가 */
+    padding: 10px 20px;
   }
+  
   
   .edit-post-container button {
     background-color: #007bff;
@@ -32,7 +35,10 @@
     padding: 10px 20px;
     font-weight: bold;
     cursor: pointer;
+    display: block;
+    margin-left: auto;
   }
+  
   
   .edit-post-container button:hover {
     opacity: 0.9;

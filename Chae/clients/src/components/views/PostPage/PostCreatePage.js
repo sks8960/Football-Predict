@@ -87,8 +87,8 @@ function PostCreatePage() {
                     onChange={e => setContent(e.target.value)}
                 ></textarea>
                 <div className="button-container">
-                    <button className="create-button" onClick={createPost}>작성 완료</button>
                     <button className="cancel-button" onClick={goBack}>취소</button>
+                    <button className="create-button" onClick={createPost}>작성 완료</button>
                 </div>
             </div>
         </div>

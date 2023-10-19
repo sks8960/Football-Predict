@@ -62,10 +62,12 @@ function Quadrants() {
   );
 }
 
+
 function App() {
   return (
     <div>
       <Navbar />
+      
       <Routes>
         <Route path="/" element={<Quadrants />} />
         <Route exact path="/login" element={<LoginPage />} />

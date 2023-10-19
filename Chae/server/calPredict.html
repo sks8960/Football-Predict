@@ -21,6 +21,9 @@
     .table-container {
       margin-top: 20px;
     }
+    .team-info-table {
+      margin-bottom: 20px; /* 두 테이블 사이의 간격을 조절합니다. */
+    }
   </style>
 </head>
 <body>
@@ -52,8 +55,28 @@
               const homeTeam = predictions.response[0].teams.home.name;
               const awayTeam = predictions.response[0].teams.away.name;
               const teamInfo = document.createElement("p");
-              teamInfo.textContent = `home: ${homeTeam}, away: ${awayTeam}`;
-              comparisonContainer.appendChild(teamInfo);
+              const teamInfoTable = document.createElement("table");
+teamInfoTable.classList.add("team-info-table");
+
+const teamInfoRow = document.createElement("tr");
+
+const homeTeamCell = document.createElement("td");
+homeTeamCell.textContent = homeTeam;
+const homeTeamHeader = document.createElement("th");
+homeTeamHeader.textContent = "HOME";
+
+const awayTeamCell = document.createElement("td");
+awayTeamCell.textContent = awayTeam;
+const awayTeamHeader = document.createElement("th");
+awayTeamHeader.textContent = "AWAY";
+
+teamInfoRow.appendChild(homeTeamHeader);
+teamInfoRow.appendChild(homeTeamCell);
+teamInfoRow.appendChild(awayTeamHeader);
+teamInfoRow.appendChild(awayTeamCell);
+
+teamInfoTable.appendChild(teamInfoRow);
+comparisonContainer.appendChild(teamInfoTable);
 
               const comparisonTable = createComparisonTable(predictions.response[0].comparison);
               comparisonContainer.appendChild(comparisonTable);

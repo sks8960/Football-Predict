@@ -239,7 +239,8 @@ function Post1() {
             </div>
             {currentUserName && (
                 <div className="comment-section">
-                    <h3>댓글</h3>
+                <h3>댓글</h3>
+                <div className="comment-input">
                     <textarea
                         rows="4"
                         placeholder="댓글을 작성하세요."
@@ -250,15 +251,17 @@ function Post1() {
                         작성
                     </button>
                 </div>
+            </div>
+            
             )}
 
             {/* 댓글 목록 표시 부분 (추가) */}
             {commentContents.length > 0 && (
                 <div className="comments">
                     <h4>댓글 목록</h4>
-                    <ul>
+                    <ul className='comment-ul'style={{ maxHeight: '500px', overflowY: 'auto' }}>
                         {commentContents.map((comment) => (
-                            <li key={comment._id}>
+                            <li key={comment._id} className='comment-li'>
                                 <div className="comment-header">
                                     <p className="comment-author">{comment.author}</p>
                                     <p className="comment-time">{formatDate(comment.createdAt)}</p>
