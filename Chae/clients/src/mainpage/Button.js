@@ -5,8 +5,8 @@ import axios from "axios";
 
 function Button() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+
   useEffect(() => {
-    // 컴포넌트가 마운트될 때 쿠키 확인 수행
     const checkAuthStatus = async () => {
       try {
         const response = await axios.get('/api/users/auth');
@@ -22,8 +22,7 @@ function Button() {
     };
 
     checkAuthStatus();
-
-  }, [isAuthenticated]);
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -31,7 +30,6 @@ function Button() {
       if (response.data.success) {
         setIsAuthenticated(false);
         alert("로그아웃 되었습니다.");
-
       } else {
         alert('로그아웃 하는데 실패 했습니다.');
       }
@@ -40,6 +38,7 @@ function Button() {
     }
   };
 
+  // 로그인 상태가 변경될 때마다 버튼 렌더링
   return (
     <div>
       {isAuthenticated ? (

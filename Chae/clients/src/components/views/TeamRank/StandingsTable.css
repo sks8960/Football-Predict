@@ -1,76 +1,82 @@
 /* StandingsTable.css */
 
 .standings-table-container {
-    max-width: 800px; /* 최대 너비 설정 */
-    max-height: 400px; /* 최대 높이 설정 */
-    overflow: auto; /* 스크롤바 표시 */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    z-index: 1000;
-  }
-  
-  .table-container {
-    overflow: auto; /* 내용이 넘칠 때 스크롤 표시 */
-    width: 100%; /* 테이블 너비를 100%로 설정하여 전체 너비 활용 */
-  }
-  
-  .standings-table {
-    width: 100%; /* 테이블 너비 100%로 설정 */
-    border-collapse: collapse;
-    margin: 0 auto;
-  }
-  
-  .standings-table th,
-  .standings-table td {
-    padding: 10px;
-    text-align: center;
-    border: 1px solid #ccc;
-  }
-  
-  .standings-table th {
-    background-color: #f2f2f2;
-    font-weight: bold;
-  }
-  
-  .standings-table tr:nth-child(even) {
-    background-color: #f2f2f2;
-  }
-  
-  .standings-table tr:hover {
-    background-color: #ddd;
-  }
-  
-  .league-buttons {
-    margin-bottom: 20px;
-  }
-  
-  .league-button {
-    padding: 5px 40px;
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    cursor: pointer;
-    margin-right: 10px;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    flex: 1;
-    margin: 0 5px; /* 각 버튼의 좌우 여백 조정 */
-  }
-  
-  .league-button.active {
-    background-color: #0056b3;
-  }
-  
-  .loading-text {
-    font-size: 18px;
-    font-weight: bold;
-    margin-top: 20px;
-  }
-  
-  .table-row-link {
-    cursor: pointer;
-    padding: 0.5rem; /* 필요에 따라 패딩 조정 */
-    user-select: none;
-  }
+  max-width: 800px;
+  /* 최대 너비 설정 */
+  max-height: 400px;
+  /* 최대 높이 설정 */
+  overflow: auto;
+  /* 스크롤바 표시 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.table-container {
+  overflow: auto;
+  /* 내용이 넘칠 때 스크롤 표시 */
+  width: 100%;
+  /* 테이블 너비를 100%로 설정하여 전체 너비 활용 */
+}
+
+.standings-table {
+  width: 100%;
+  /* 테이블 너비 100%로 설정 */
+  border-collapse: collapse;
+  margin: 0 auto;
+}
+
+.standings-table th,
+.standings-table td {
+  padding: 10px;
+  text-align: center;
+  border: 1px solid #ccc;
+}
+
+.standings-table th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+.standings-table tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.standings-table tr:hover {
+  background-color: #ddd;
+}
+
+.league-buttons {
+  margin-bottom: 20px;
+}
+
+.league-button {
+  padding: 5px 40px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  margin-right: 10px;
+  position: sticky;
+  top: 0;
+  flex: 1;
+  margin: 0 5px;
+  /* 각 버튼의 좌우 여백 조정 */
+}
+
+.league-button.active {
+  background-color: #0056b3;
+}
+
+.loading-text {
+  font-size: 18px;
+  font-weight: bold;
+  margin-top: 20px;
+}
+
+.table-row-link {
+  cursor: pointer;
+  padding: 0.5rem;
+  /* 필요에 따라 패딩 조정 */
+  user-select: none;
+}

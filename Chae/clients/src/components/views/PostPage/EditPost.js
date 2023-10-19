@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
+import './css/EditPost.css';
 
 function EditPost() {
     const { id } = useParams();
@@ -37,7 +38,7 @@ function EditPost() {
     };
 
     return (
-        <div>
+        <div className="edit-post-container">
             <h2>게시물 수정</h2>
             <textarea
                 rows="6"
