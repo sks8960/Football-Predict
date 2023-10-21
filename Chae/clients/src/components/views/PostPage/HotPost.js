@@ -25,18 +25,21 @@ function PostList() {
     }, []);
 
     return (
-        <div>
-            <h1>최근 게시물</h1>
-            <ol>
+        <div className="post-list-container">
+        <h1 className="post-list-title">최근 게시판</h1>
+        <ol className="post-list">
                 {posts.map((post) => (
-                    <li key={post._id}>
+                    <li key={post._id} className="post-item">
                         <Link to={`/post/${post._id}`} className="custom-link">
-                            <p>
-                                {post.title}[{post.comments.length}] (작성자: {post.username})
-                                작성 시간: {getTimeDifference(post.time)}
-                                Likes: {post.likeCount}
-                                Dislikes: {post.dislikeCount}
-                            </p>
+                            <div className="post-title">
+                                {post.title} [{post.comments.length}]
+                            </div>
+                            <div className="post-details">
+                                작성자: {post.username} · 작성 시간: {getTimeDifference(post.time)}
+                            </div>
+                            <div className="post-likes-dislikes">
+                                Likes: {post.likeCount} · Dislikes: {post.dislikeCount}
+                            </div>
                         </Link>
                     </li>
                 ))}

@@ -63,20 +63,20 @@ const StandingsTable = () => {
   }, [leagueData, leagues]);
 
   return (
-    <div className="standings-table-container">
-      <div className="league-buttons">
+    <div className="standings-table-container2">
+      <div className="league-buttons2">
         {leagues.map((league) => (
           <button
             key={league.id}
-            className={`league-button ${leagueId === league.id ? 'active' : ''}`}
+            className={`league-button2 ${leagueId === league.id ? 'active' : ''}`}
             onClick={() => setLeagueId(league.id)}
           >
             {league.name}
           </button>
         ))}
       </div>
-      <div className="table-container">
-        <table className="standings-table">
+      <div className="table-container2">
+        <table className="standings-table2">
           <thead>
             <tr>
               <th>순위</th>

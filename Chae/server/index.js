@@ -505,7 +505,7 @@ app.get("/api/hotposts", async (req, res) => {
         },
       },
       { $sort: { score: -1 } }, // 점수 내림차순 정렬
-      { $limit: 10 }, // 최대 10개 게시물만 선택
+      { $limit: 7 }, // 최대 10개 게시물만 선택
     ]);
 
     res.status(200).json(posts);
