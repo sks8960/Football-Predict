@@ -36,6 +36,8 @@ import './components/views/HomPage/Quadrants.css';
 
 import HotPost from './components/views/PostPage/HotPost'
 
+import Ch from './components/views/ChatPage/Ch';
+
 import Footer from './components/views/Footer/Footer'
 /* 홈페이지 레이아웃 사분면으로 구현 */
 function Quadrants() {
@@ -50,12 +52,12 @@ function Quadrants() {
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         {/* 위쪽 절반 (Space2) */}
         <div style={{ flex: 1, backgroundColor: "green" }}>
-          <TopPlayers />
+          {/* <TopPlayers /> */}
         </div>
 
         {/* 아래쪽 절반 (Space3) */}
         <div style={{ flex: 1, backgroundColor: "orange" }}>
-          <TeamRank />
+          {/* <TeamRank /> */}
         </div>
       </div>
     </div>
@@ -67,7 +69,7 @@ function App() {
   return (
     <div>
       <Navbar />
-      
+
       <Routes>
         <Route path="/" element={<Quadrants />} />
         <Route exact path="/login" element={<LoginPage />} />
@@ -76,7 +78,7 @@ function App() {
         <Route path="/post" element={<PostListPage1 />} />
         <Route path="/post/create" element={<PostCreatePage />} /> // Add the route for PostCreatePage
         <Route path="/post/:id" element={<Post1 />} />
-        <Route path='/chat' element={<Chat />} />
+        <Route path='/chat' element={<Ch />} />
         <Route exact path="/chat/:roomId" component={ChatRoomPage} />
         <Route exact path='/cal/epl' element={<CalEpl />} />
         <Route exact path='/cal/laliga' element={<CalLaliga />} />

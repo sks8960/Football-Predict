@@ -1,0 +1,141 @@
+/* Ch.css */
+
+/* 기본 스타일링 */
+.chat-container {
+    width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #e7a7a7;
+    border-radius: 5px;
+    background-color: #f5f5f5;
+}
+
+/* chat-header 스타일 수정 */
+.chat-header {
+    display: flex;
+    flex-direction: column;
+    /* 세로로 배치 */
+    align-items: center;
+    /* 가운데 정렬 */
+    margin-bottom: 20px;
+    /* 간격 늘림 */
+}
+
+/* 방 이름 스타일 수정 */
+.chat-header h2 {
+    margin-right: 10px;
+    /* 방 이름과 "Leave Room" 버튼 사이 간격 */
+}
+
+/* 방을 표시하는 버튼 스타일 수정 (초록색) */
+.chat-header button {
+    padding: 5px 10px;
+    background-color: #4CAF50;
+    /* 초록색 (예시) */
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* "Leave Room" 버튼 스타일 수정 (빨간색) */
+.chat-header button.leave-room-button {
+    /* 빨간색 (예시) */
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* 버튼 호버 효과 (초록색 버튼) */
+.chat-header button:hover {
+    background-color: #45a049;
+    /* 초록색 버튼 호버 시 색상 변경 (예시) */
+}
+
+/* 버튼 호버 효과 ("Leave Room" 버튼 - 빨간색 버튼) */
+.chat-header button.leave-room-button:hover {
+    color: red;
+    /* 빨간색 버튼 호버 시 색상 변경 (예시) */
+}
+
+.chat-nickname input {
+    width: 100%;
+    padding: 5px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.chat-messages {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    background-color: #fff;
+    margin-top: 20px;
+    /* 메시지와 위쪽 간격 늘림 */
+}
+
+.chat-message {
+    margin: 5px 0;
+}
+
+.chat-input-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chat-input {
+    flex: 1;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.chat-button {
+    padding: 5px 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* 버튼 호버 효과 */
+.chat-button:hover {
+    background-color: #0056b3;
+}
+
+/* "Leave Room" 버튼 스타일 수정 (빨간색) */
+.leave-room-button {
+    background-color: #FF5733;
+    /* 빨간색 (예시) */
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* "Leave Room" 버튼 호버 효과 (빨간색) */
+.leave-room-button:hover {
+    background-color: #E74C3C;
+    /* 빨간색 버튼 호버 시 색상 변경 (예시) */
+}
+
+/* 방 버튼 스타일 수정 (초록색) */
+.room-button {
+    padding: 5px 10px;
+    background-color: #4CAF50;
+    /* 초록색 (예시) */
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* 방 버튼 호버 효과 (초록색) */
+.room-button:hover {
+    background-color: #45a049;
+    /* 초록색 버튼 호버 시 색상 변경 (예시) */
+}

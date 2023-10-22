@@ -1,7 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 import io from 'socket.io-client';
 
 const App = () => {
@@ -11,53 +8,71 @@ const App = () => {
     const [socket, setSocket] = useState(null);
     const [rooms, setRooms] = useState([]);
     const [showRoomForm, setShowRoomForm] = useState(true);
-    const [participants, setParticipants] = useState(0); // 참여자 수 상태 추가
+    const [participants, setParticipants] = useState(0);
 
     useEffect(() => {
         const newSocket = io('http://localhost:5000');
         setSocket(newSocket);
+
+        newSocket.on('welcome', (user, newCount) => {
+            addMessage(`${user} arrived!`);
+            setParticipants(newCount);
+        });
+
+        newSocket.on('bye', (left, newCount) => {
+            addMessage(`${left} Left!!`);
+            setParticipants(newCount);
+        });
+
+        newSocket.on('new_message', (msg) => {
+            addMessage(msg);
+        });
 
         return () => {
             newSocket.close();
         };
     }, []);
 
-    useEffect(() => {
-        if (socket && roomName) {
-            const handleWelcome = (user, newCount) => {
-                addMessage(`${user} arrived!`);
-                setParticipants(newCount); // 참여자 수 업데이트
-            };
-
-            const handleBye = (left, newCount) => {
-                addMessage(`${left} Left!!`);
-                setParticipants(newCount); // 참여자 수 업데이트
-            };
-
-            const handleNewMessage = (msg) => {
-                addMessage(msg);
-            };
-
-            const handleRoomChange = (rooms) => {
-                setRooms(rooms);
-            };
-
-            socket.on('welcome', handleWelcome);
-            socket.on('bye', handleBye);
-            socket.on('new_message', handleNewMessage);
-            socket.on('room_change', handleRoomChange);
-
-            return () => {
-                socket.off('welcome', handleWelcome);
-                socket.off('bye', handleBye);
-                socket.off('new_message', handleNewMessage);
-                socket.off('room_change', handleRoomChange);
-            };
-        }
-    }, [socket, roomName]);
-
     const addMessage = (msg) => {
         setMessages((prevMessages) => [...prevMessages, msg]);
+    };
+
+    const enterRoom = (room) => {
+        if (socket) {
+            if (roomName) {
+                leaveRoom();
+            }
+            setRoomName(room);
+            setShowRoomForm(false);
+            const enterMessage = `Entered ${room} room.`;
+            addMessage(enterMessage);
+            socket.emit('enter_room', room, showRoom);
+        }
+    };
+
+    const leaveRoom = () => {
+        const currentRoom = roomName;
+
+        setRoomName('');
+        setShowRoomForm(true);
+        setMessages([]);
+        setNickname('');
+        setRooms([]);
+        setParticipants(0);
+        if (socket) {
+            socket.emit('leave_room', currentRoom, () => {
+                const leaveMessage = `Left the room.`;
+                addMessage(leaveMessage);
+            });
+        }
+    };
+
+    const showRoom = () => {
+        if (!roomName && socket) {
+            socket.emit('get_rooms', (availableRooms) => {
+                setRooms(availableRooms);
+            });
+        }
     };
 
     const handleRoomSubmit = (event) => {
@@ -68,23 +83,14 @@ const App = () => {
         }
     };
 
-    const showRoom = () => {
-        if (!roomName) {
-            socket.emit('get_rooms', (rooms) => {
-                setRooms(rooms);
-            });
-        }
-    };
-
     const handleMessageSubmit = (event) => {
         event.preventDefault();
         const input = document.getElementById('msg-input');
-        const value = input.value;
         if (socket) {
             socket.emit('new_message', input.value, roomName, () => {
-                addMessage(`You: ${value}`);
+                // Clear the input field after sending the message
+                input.value = '';
             });
-            input.value = '';
         }
     };
 
@@ -94,42 +100,10 @@ const App = () => {
         if (socket) {
             socket.emit('nickname', input.value);
             setNickname(input.value);
-            socket.emit('enter_room', roomName, showRoom); // 닉네임 설정 후 방에 입장 요청
+            socket.emit('enter_room', roomName, showRoom);
             setShowRoomForm(false);
-            const enterMessage = ` ${roomName}방에 접속하였습니다.`;
+            const enterMessage = `${input.value} entered the ${roomName} room.`;
             addMessage(enterMessage);
-        }
-    };
-
-
-    const handleEnterRoom = (room) => {
-        if (socket) {
-            if (roomName) {
-                leaveRoom(); // Leave the current room before entering a new one
-            }
-            setRoomName(room);
-            setShowRoomForm(false);
-            const enterMessage = `Entered ${room} room.`;
-            addMessage(enterMessage);
-            socket.emit('enter_room', room, showRoom);
-        }
-    };
-
-
-    const leaveRoom = () => {
-        const currentRoom = roomName;
-
-        setRoomName('');
-        setShowRoomForm(true);
-        setMessages([]);
-        setNickname('');
-        setRooms([]);
-        setParticipants(0); // 참여자 수 초기화
-        if (socket) {
-            socket.emit('leave_room', currentRoom, () => {
-                const leaveMessage = `방을 나갔습니다.`;
-                addMessage(leaveMessage);
-            });
         }
     };
 
@@ -146,7 +120,7 @@ const App = () => {
                             <ul>
                                 {rooms.map((room, index) => (
                                     <li key={index}>
-                                        <button onClick={() => handleEnterRoom(room)}>
+                                        <button onClick={() => enterRoom(room)}>
                                             {room}
                                         </button>
                                     </li>
@@ -157,6 +131,7 @@ const App = () => {
                                     placeholder="room name"
                                     required
                                     type="text"
+                                    value={roomName}
                                     onChange={(e) => setRoomName(e.target.value)}
                                 />
                                 <button>Enter Room</button>
@@ -168,7 +143,7 @@ const App = () => {
                             <ul>
                                 {rooms.map((room, index) => (
                                     <li key={index}>
-                                        <button onClick={() => handleEnterRoom(room)}>
+                                        <button onClick={() => enterRoom(room)}>
                                             {room}
                                         </button>
                                     </li>
@@ -176,7 +151,7 @@ const App = () => {
                             </ul>
                             <div id="room">
                                 <h2>{roomName}</h2>
-                                <h3>Participants: {participants}</h3> {/* 수정된 참여자 수 표시 */}
+                                <h3>Participants: {participants}</h3>
                                 <ul>
                                     {messages.map((message, index) => (
                                         <li key={index}>{message}</li>

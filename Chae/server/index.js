@@ -1109,88 +1109,152 @@ app.get("/teams/:teamName", (req, res) => {
 });
 
 
-// 채팅
-const rooms = {};
-var count = 0;
+//채팅
+// const rooms = {};
+// let count = 0;
 
-const publicRooms = () => {
-  const {
-    sockets: {
-      adapter: { sids, rooms },
-    },
-  } = io;
-  const publicRooms = [];
-  rooms.forEach((_, key) => {
-    if (sids.get(key) === undefined) {
-      publicRooms.push(key);
-    }
-  });
-  return publicRooms;
-};
+// const publicRooms = (io) => {
+//   const publicRooms = [];
+//   const { adapter } = io.sockets;
+//   if (adapter) {
+//     const { sids, rooms } = adapter;
+//     rooms.forEach((_, key) => {
+//       if (sids.get(key) === undefined) {
+//         publicRooms.push(key);
+//       }
+//     });
+//   }
+//   return publicRooms;
+// };
 
+// io.on("connection", (socket) => {
+//   socket.nickname = `익명(${count})`;
+//   count++;
+
+//   socket.onAny((event) => {
+//     console.log(`Socket Event: ${event}`);
+//   });
+
+//   socket.on("enter_room", (roomName, done) => {
+//     socket.join(roomName);
+//     socket.room = roomName;
+//     if (!rooms[roomName]) {
+//       rooms[roomName] = { participants: 1 };
+//     } else {
+//       rooms[roomName].participants += 1;
+//     }
+//     io.to(roomName).emit(
+//       "welcome",
+//       socket.nickname,
+//       rooms[roomName].participants
+//     );
+//     io.sockets.emit("room_change", publicRooms(io));
+//     done();
+//   });
+
+//   socket.on("leave_room", (roomName, done) => {
+//     if (rooms[roomName]) {
+//       rooms[roomName].participants -= 1;
+//       if (rooms[roomName].participants === 0) {
+//         delete rooms[roomName];
+//       }
+//     }
+//     socket.leave(roomName);
+//     io.to(roomName).emit("bye", socket.nickname, rooms[roomName]?.participants);
+//     io.sockets.emit("room_change", publicRooms(io));
+//     done();
+//   });
+
+//   socket.on("new_message", (message, roomName, done) => {
+//     // 클라이언트가 보낸 메시지를 방에 참여한 모든 사용자에게 브로드캐스트
+//     io.to(roomName).emit("new_message", `${socket.nickname}: ${message}`);
+//     done();
+//   });
+
+//   socket.on("nickname", (nickname) => {
+//     socket.nickname = nickname;
+//   });
+
+//   socket.on("disconnect", () => {
+//     const roomName = socket.room;
+//     if (roomName && rooms[roomName]) {
+//       rooms[roomName].participants -= 1;
+//       if (rooms[roomName].participants === 0) {
+//         delete rooms[roomName];
+//       }
+//       io.to(roomName).emit(
+//         "bye",
+//         socket.nickname,
+//         rooms[roomName]?.participants
+//       );
+//     }
+//     io.sockets.emit("room_change", publicRooms(io));
+//   });
+// });
+const rooms = new Map();
 io.on("connection", (socket) => {
-  socket["nickname"] = `익명(${count})`;
-  count++;
+  console.log("A user connected");
 
-  socket.onAny((event) => {
-    console.log(`Socket Event: ${event}`);
+  socket.on("message", (data) => {
+    console.log(data);
+    io.emit("message", data);
   });
 
-  socket.on("enter_room", (roomName, done) => {
-    socket.join(roomName);
-    socket.room = roomName;
-    if (!rooms[roomName]) {
-      rooms[roomName] = { participants: 1 };
-    } else {
-      rooms[roomName].participants += 1;
+  socket.on("createRoom", (roomName) => {
+    if (!rooms.has(roomName)) {
+      rooms.set(roomName, { users: new Set() });
     }
-    io.to(roomName).emit(
-      "welcome",
-      socket.nickname,
-      rooms[roomName].participants
-    );
-    io.sockets.emit("room_change", publicRooms());
-    done();
+    rooms.get(roomName).users.add(socket.id); // Use socket.id to uniquely identify users
+    console.log(rooms);
+    updateRoomList();
   });
 
-  socket.on("leave_room", (roomName, done) => {
-    if (rooms[roomName]) {
-      rooms[roomName].participants -= 1;
-      if (rooms[roomName].participants === 0) {
-        delete rooms[roomName];
+  socket.on("joinRoom", (roomName) => {
+    if (rooms.has(roomName)) {
+      socket.room = roomName;
+      rooms.get(roomName).users.add(socket.id);
+      console.log(rooms.get(roomName));
+      updateRoomList();
+    }
+  });
+
+  socket.on("leaveRoom", () => {
+    if (socket.room) {
+      const roomName = socket.room;
+      rooms.get(roomName).users.delete(socket.id);
+      if (rooms.get(roomName).users.size === 0) {
+        // If the room is empty, remove it
+        rooms.delete(roomName);
       }
+      socket.room = null;
+      updateRoomList();
     }
-    socket.leave(roomName);
-    io.to(roomName).emit("bye", socket.nickname, rooms[roomName]?.participants);
-    io.sockets.emit("room_change", publicRooms());
-    done();
-  });
-
-  socket.on("new_message", (message, roomName, done) => {
-    io.to(roomName).emit("new_message", `${socket.nickname}: ${message}`);
-    done();
-  });
-
-  socket.on("nickname", (nickname) => {
-    socket["nickname"] = nickname;
   });
 
   socket.on("disconnect", () => {
-    const roomName = socket.room;
-    if (roomName && rooms[roomName]) {
-      rooms[roomName].participants -= 1;
-      if (rooms[roomName].participants === 0) {
-        delete rooms[roomName];
+    console.log("A user disconnected");
+    if (socket.room) {
+      const roomName = socket.room;
+      rooms.get(roomName).users.delete(socket.id);
+      if (rooms.get(roomName).users.size === 0) {
+        // If the room is empty, remove it
+        rooms.delete(roomName);
       }
-      io.to(roomName).emit(
-        "bye",
-        socket.nickname,
-        rooms[roomName]?.participants
-      );
+      updateRoomList();
     }
-    io.sockets.emit("room_change", publicRooms());
   });
+
+  function updateRoomList() {
+    const roomList = Array.from(rooms.keys()).map((roomName) => ({
+      roomName,
+      users: rooms.get(roomName).users.size,
+    }));
+    io.emit("roomList", roomList);
+  }
 });
+
+
+
 
 server.listen(port, () =>
   console.log(`Example app listening on port ${port}!`)
