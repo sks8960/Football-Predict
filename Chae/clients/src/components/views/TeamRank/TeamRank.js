@@ -95,7 +95,7 @@ const StandingsTable = () => {
                 <tr key={index}>
                   <td>{team.rank}</td>
                   <td>
-                  <Link to={`/team/${team.team.name}`} style={linkStyle}>
+                  <Link to={`/TeamView/${team.team.name}`} style={linkStyle}>
                     {team.team.name}
                   </Link>
                 </td>

@@ -1,0 +1,26 @@
+.table-container {
+    max-height: 400px; /* 테이블의 최대 높이를 지정 (스크롤 높이) */
+    overflow-y: auto; /* 세로 스크롤을 추가하여 넘치는 내용을 스크롤로 표시 */
+    margin-right: 20px;
+  }
+
+.custom-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .custom-table tr {
+    border-bottom: 1px solid #dddddd;
+  }
+  
+  .custom-table td {
+    padding: 10px;
+    text-align: left;
+    vertical-align: top;
+  }
+  
+  .custom-table .header {
+    font-weight: bold;
+    background-color: #f0f0f0;
+  }
+  

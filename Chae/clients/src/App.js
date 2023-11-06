@@ -39,6 +39,9 @@ import HotPost from './components/views/PostPage/HotPost'
 import Ch from './components/views/ChatPage/Ch';
 
 import Footer from './components/views/Footer/Footer'
+
+import TeamStat from './components/views/TeamPage/TeamStat'
+import TeamView from './components/views/TeamPage/TeamView'
 /* 홈페이지 레이아웃 사분면으로 구현 */
 function Quadrants() {
   return (
@@ -86,6 +89,8 @@ function App() {
         <Route exact path='/cal/seriea' element={<CalSeriea />} />
         <Route exact path='/cal/bundesliga' element={<CalBundesliga />} />
         <Route exact path='/team/:teamName' element={<Team />} />
+        <Route exact path='/teamstat/:teamName' element={<TeamStat />} />
+        <Route exact path='/TeamView/:teamName' element={<TeamView />} />
         <Route exact path='/userlist' element={<UserList />} />
         <Route exact path="/usermatch" element={<Matching />} />
         <Route path="/post/edit/:id" element={<EditPost />} />

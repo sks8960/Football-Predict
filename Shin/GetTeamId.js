@@ -40,11 +40,13 @@ const req = http.request(options, function (res) {
     parse.response.forEach((element) => {
       const team_id = element.team.id;
       const team_name = element.team.name;
-      const sql = `INSERT INTO teams (team_id, team_name) VALUES (${team_id}, '${team_name}')`;
+      const league_id = 61;
+      const sql = `INSERT INTO teams (team_id, team_name, league_id) VALUES (${team_id}, '${team_name}', '${league_id}')`;
       connection.query(sql, function (err, result) {
         if (err) throw err;
         console.log(`Team ${team_name}`);
         console.log(`ID ${team_id}`);
+        console.log(`ID ${league_id}`);
       });
     });
     connection.end();
