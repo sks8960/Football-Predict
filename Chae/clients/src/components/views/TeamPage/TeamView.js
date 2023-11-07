@@ -3,6 +3,7 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import TeamStat from './TeamStat';
 import TeamSquad from './TeamSquad';
+import TeamInfo from './TeamInfo';
 
 function TeamView() {
   const { teamName } = useParams(); // URL에서 팀 이름 값을 추출
@@ -10,7 +11,7 @@ function TeamView() {
   return (
     <div style={{ display: 'flex', height: '100vh' }}>
       <div style={{ flex: 1 }}>
-        
+        <TeamInfo teamName={teamName} />
       </div>
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         <div style={{ flex: 1 }}>

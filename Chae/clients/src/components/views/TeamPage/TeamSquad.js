@@ -29,11 +29,13 @@ const TeamSquad = () => {
 
   return (
     <div className="team-squad-container">
-      <h2>팀 선수 목록 - {teamName}</h2>
       {players.length > 0 ? (
-        <div className="table-container">
+        <div className="table-containerts">
           <table>
-            <thead>
+          <thead>
+              <tr>
+                <th colSpan="4" className="table-headerts">팀 선수 목록</th>
+              </tr>
               <tr>
                 <th>선수 이름</th>
                 <th>포지션</th>

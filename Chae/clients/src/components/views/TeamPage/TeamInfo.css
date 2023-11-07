@@ -1,0 +1,24 @@
+.team-info-container {
+    display: flex;
+    align-items: center;
+    margin: 20px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
+  
+  .team-logo {
+    flex: 1;
+    text-align: center;
+    margin-right: 20px;
+  }
+  
+  .team-logo img {
+    max-width: 100px;
+    height: auto;
+  }
+  
+  .team-details {
+    flex: 2;
+  }
+  

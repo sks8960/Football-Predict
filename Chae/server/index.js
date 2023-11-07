@@ -964,6 +964,60 @@ app.get("/cal/predict/:fixtureId", async (req, res) => {
   }
 });
 
+// 팀정보 받아오기
+
+app.get("/teaminfo/:teamName", (req, res) => {
+  const teamName = req.params.teamName;
+  db.query(
+    `SELECT team_id FROM teams WHERE team_name = '${teamName}'`,
+    function (error, results, fields) {
+      if (error) {
+        console.log(error);
+        res.status(500).send("Internal server error");
+        return;
+      }
+      const teamId = results[0].team_id;
+      console.log(`Team ID: ${teamId}`);
+
+      const options = {
+        method: "GET",
+        hostname: "api-football-v1.p.rapidapi.com",
+        port: null,
+        path: `/v3/teams?id=${teamId}`,
+        headers: {
+          "x-rapidapi-key":
+            "96e6fbd9e1msh363fb680c23119fp131a0ajsn8edccdfdd332",
+          "x-rapidapi-host": "api-football-v1.p.rapidapi.com",
+          useQueryString: true,
+        },
+      };
+
+      // 실제 API 요청 보내기
+      const apiRequest = https.request(options, (apiResponse) => {
+        let data = "";
+
+        apiResponse.on("data", (chunk) => {
+          data += chunk;
+        });
+
+        apiResponse.on("end", () => {
+          const teamInfo = JSON.parse(data);
+          // 여기에서 팀 정보를 사용할 수 있습니다.
+          res.json(teamInfo);
+        });
+      });
+
+      apiRequest.on("error", (error) => {
+        console.error(error);
+        res.status(500).send("Internal server error");
+      });
+
+      apiRequest.end();
+    }
+  );
+});
+
+
 // 팀 스쿼드
 app.get("/teamsquad/:teamName", (req, res) => {
   const teamName = req.params.teamName;
