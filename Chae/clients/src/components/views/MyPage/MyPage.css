@@ -1,0 +1,42 @@
+.mypage {
+  text-align: center;
+}
+
+.mypage-title {
+  font-size: 24px;
+}
+
+.mypage-user-info {
+  margin: 20px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.mypage-info {
+  margin: 5px 0;
+}
+
+/* MyPage.css */
+
+.recent-posts {
+  text-align: center; /* Center-align the content inside .recent-posts */
+}
+
+.post-link {
+  text-decoration: none; /* Remove underline */
+  color: inherit; /* Inherit the color from the parent */
+}
+/* MyPage.css */
+
+ul {
+  list-style: none; /* Remove default list styles (bullets) */
+  padding: 0; /* Remove default padding */
+  margin: 0; /* Remove default margin */
+}
+
+.post-link {
+  text-decoration: none; /* Remove underline */
+  color: inherit; /* Inherit the color from the parent */
+}

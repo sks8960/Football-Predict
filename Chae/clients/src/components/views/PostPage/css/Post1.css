@@ -1,126 +1,124 @@
 /* Post1.css */
 
 .post-container-1 {
-    max-width: 800px;
-    height: 1000px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #fff;
-    border: 1px solid #e0e0e0;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    position: relative;
-  }
-  
-  .post-title-1 {
-    font-size: 24px;
-    margin: 0;
-  }
-  
-  .post-content-1 {
-    font-size: 16px;
-    margin-top: 10px;
-    margin-bottom: 20px;
-  }
-  
-  .post-time-1 {
-    font-size: 14px;
-    color: #888;
-    margin-bottom: 20px;
-  }
-  
-  .post-buttons-1 {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
-  }
-  
-  .like-button-1,
-  .dislike-button-1 {
-    padding: 10px 20px;
-    color: #fff;
-    font-weight: bold;
-    cursor: pointer;
-    border: none;
-    border-radius: 5px;
-  }
-  
-  .like-button-1 {
-    background-color: #007bff;
-  }
-  
-  .dislike-button-1 {
-    background-color: #dc3545;
-  }
-  
-  .edit-button-1 {
-    background-color: #28a745;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    padding: 10px 20px;
-    font-weight: bold;
-    cursor: pointer;
-    position: absolute;
-    top: 10px;
-    right: 80px;
-  }
-  
-  .edit-button-1 a {
-    text-decoration: none;
-    color: #fff;
-  }
-  
-  .delete-button-1 {
-    background-color: #dc3545;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    padding: 10px 20px;
-    font-weight: bold;
-    cursor: pointer;
-    position: absolute;
-    top: 10px;
-    right: 10px;
-  }
-  
-  .comment-input {
-    display: flex;
-    flex-direction: row; /* Arrange elements horizontally */
-    align-items: center; /* Vertically center elements within the div */
+  max-width: 800px;
+  height: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.post-title-1 {
+  font-size: 24px;
+  margin: 0;
+}
+
+.post-content-1 {
+  font-size: 16px;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+.post-time-1 {
+  font-size: 14px;
+  color: #888;
+  margin-bottom: 20px;
+}
+
+.post-buttons-1 {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.like-button-1,
+.dislike-button-1 {
+  padding: 10px 20px;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+}
+
+.like-button-1 {
+  background-color: #007bff;
+}
+
+.dislike-button-1 {
+  background-color: #dc3545;
+}
+
+.edit-button-1 {
+  background-color: #28a745;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  font-weight: bold;
+  cursor: pointer;
+  position: absolute;
+  top: 10px;
+  right: 80px;
+}
+
+.edit-button-1 a {
+  text-decoration: none;
+  color: #fff;
+}
+
+.delete-button-1 {
+  background-color: #dc3545;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  font-weight: bold;
+  cursor: pointer;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+.comment-input {
+  display: flex;
+  flex-direction: row; /* Arrange elements horizontally */
+  align-items: center; /* Vertically center elements within the div */
 }
 
 .comment-input textarea {
-    flex: 1; /* Allow the textarea to expand and fill available space */
-    margin-right: 10px; /* Add space between textarea and button */
+  flex: 1; /* Allow the textarea to expand and fill available space */
+  margin-right: 10px; /* Add space between textarea and button */
 }
 
-  
-  
-  .comment-button {
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    padding: 10px 20px;
-    font-weight: bold;
-    cursor: pointer;
-    width: 80px; /* Adjust the width of the button as needed */
-    height: 70px;
-  }
-  
-  .comments {
-    margin-top: 30px;
-    border: 1px solid #ddd;
-    padding: 20px;
-    border-radius: 5px;
-    background-color: #f9f9f9;
+.comment-button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  font-weight: bold;
+  cursor: pointer;
+  width: 80px; /* Adjust the width of the button as needed */
+  height: 70px;
+}
+
+.comments {
+  margin-top: 30px;
+  border: 1px solid #ddd;
+  padding: 20px;
+  border-radius: 5px;
+  background-color: #f9f9f9;
 }
 
 .comments h4 {
-    font-size: 1.2em;
-    color: #333;
-    margin-bottom: 10px;
+  font-size: 1.2em;
+  color: #333;
+  margin-bottom: 10px;
 }
 
 /* 별도의 클래스로 ul 및 li 스타일 지정 */
@@ -137,35 +135,39 @@
   border-radius: 5px;
 }
 
-
 .comment-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .comment-author {
-    font-weight: 600;
-    color: #0077b6;
+  font-weight: 600;
+  color: #0077b6;
 }
 
 .comment-time {
-    font-size: 0.9em;
-    color: #666;
+  font-size: 0.9em;
+  color: #666;
 }
 
 .comment-text {
-    margin-top: 10px;
-    font-size: 1em;
-    color: #333;
+  margin-top: 10px;
+  font-size: 1em;
+  color: #333;
 }
 
 .delete-comment-button {
-    background-color: #ff4444;
-    color: #fff;
-    border: none;
-    padding: 5px 10px;
-    cursor: pointer;
-    margin-left: 10px;
-    border-radius: 5px;
+  background-color: #ff4444;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  margin-left: 10px;
+  border-radius: 5px;
+}
+
+.post-meta {
+  display: flex;
+  justify-content: space-between;
 }
