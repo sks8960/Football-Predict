@@ -182,7 +182,23 @@ app.post("/reject-matching-request", async (req, res) => {
     res.status(500).json({ error: "Failed to reject matching request" });
   }
 });
+/** 로고 업데이트 */
+app.post("/api/users/updateLogo", (req, res) => {
+  const { logo } = req.body; // 클라이언트로부터 받은 새 로고 URL
 
+  // 로고 업데이트 및 저장
+  User.findByIdAndUpdate(
+    req.user._id, // 현재 유저 ID (예: req.user로 접근 가능)
+    { $set: { logo } }, // 새 로고 URL로 업데이트
+    { new: true }, // 업데이트된 사용자 정보를 반환
+    (err, updatedUser) => {
+      if (err) {
+        return res.status(500).json({ error: "Failed to update logo" });
+      }
+      res.json(updatedUser);
+    }
+  );
+});
 app.post("/api/users/register", (req, res) => {
   //회원 가입 할 때 필요한 정보들을 clinet에서 가져오면
   //그것들을 데이터 베이스에 넣어준다.
@@ -259,6 +275,9 @@ app.get("/api/users/auth", auth, async (req, res) => {
       image: user.image,
       matchingRequests: user.matchingRequests,
       matchedEvents: user.matchedEvents,
+      color: user.color,
+      point: user.point,
+      logo: user.logo,
     });
   } catch (error) {
     console.error("Failed to fetch user:", error);
@@ -306,25 +325,65 @@ app.get("/api/posts", (req, res) => {
     });
 });
 
-
-app.post("/api/posts", (req, res) => {
+app.post("/api/posts", async (req, res) => {
   const { title, content, category, username } = req.body;
   const currentTime = new Date().toISOString();
+  const point = 15;
 
-  const newPost = new Post({ title, content, category, username, time: currentTime, views: 0 }); // 초기 조회수를 0으로 설정
-  newPost
-    .save()
-    .then((savedPost) => {
-      res.status(201).json({ _id: savedPost._id }); // 생성된 포스트의 _id를 응답에 추가
-    })
-    .catch((error) => {
-      console.error("Error creating post:", error);
-      res.status(500).json({ error: "Failed to create post" });
+  try {
+    // 포스트 생성
+    const newPost = new Post({
+      title,
+      content,
+      category,
+      username,
+      time: currentTime,
+      views: 0,
     });
+    const savedPost = await newPost.save();
+
+    // 글 작성 성공 시 포인트를 증가시키는 라우트 호출
+    const increasePointsResponse = await axios.post(
+      "http://localhost:5000/api/increasePoints",
+      {
+        username,
+        point: 15,
+      }
+    );
+
+    if (increasePointsResponse.status === 200) {
+      res.status(201).json({ _id: savedPost._id });
+    } else {
+      res.status(500).json({ error: "포인트 증가에 실패했습니다." });
+    }
+  } catch (error) {
+    console.error("Error creating post:", error);
+    res.status(500).json({ error: "글 작성에 실패했습니다." });
+  }
 });
+// 포인트 증가
+app.post("/api/increasePoints", async (req, res) => {
+  try {
+    const { username, point } = req.body;
+    // 유저를 찾습니다.
+    const user = await User.findOne({ name: username });
 
+    if (!user) {
+      return res.status(404).json({ error: "사용자를 찾을 수 없습니다." });
+    }
 
+    // 포인트를 15만큼 증가시킵니다.
+    user.point += point;
 
+    // 업데이트된 포인트를 저장합니다.
+    await user.save();
+
+    res.status(200).json({ message: "포인트가 증가되었습니다." });
+  } catch (error) {
+    console.error("Error increasing points:", error);
+    res.status(500).json({ error: "포인트를 증가시키는데 실패했습니다." });
+  }
+});
 
 // 백엔드 코드 수정
 app.get("/api/posts/:postId", (req, res) => {
@@ -351,28 +410,24 @@ app.get("/api/posts/:postId", (req, res) => {
     });
 });
 
-app.get('/api/posts/:category/:search', async (req, res) => {
+app.get("/api/posts/:category/:search", async (req, res) => {
   const category = req.params.category;
   const search = req.params.search; // 검색어를 파라미터로 받아옴
 
   let query = { category };
 
   if (search) {
-    query.title = { $regex: search, $options: 'i' }; // 검색어를 제목에 포함하는 조건 추가
+    query.title = { $regex: search, $options: "i" }; // 검색어를 제목에 포함하는 조건 추가
   }
 
   try {
     const posts = await Post.find(query).sort({ time: -1 });
     res.status(200).json(posts);
   } catch (error) {
-    console.error('Error fetching posts by category and search:', error);
-    res.status(500).json({ error: 'Failed to fetch posts' });
+    console.error("Error fetching posts by category and search:", error);
+    res.status(500).json({ error: "Failed to fetch posts" });
   }
 });
-
-
-
-
 
 app.get("/api/posts/:id", auth, (req, res) => {
   const postId = parseInt(req.params.id);
@@ -383,6 +438,7 @@ app.get("/api/posts/:id", auth, (req, res) => {
   return res.json(post);
 });
 
+// 게시물에 좋아요 추가
 app.post("/api/posts/:id/like", auth, async (req, res) => {
   const postId = req.params.id;
   const userName = req.user.name; // 사용자 이름 가져오기
@@ -398,6 +454,9 @@ app.post("/api/posts/:id/like", auth, async (req, res) => {
       return res.status(400).json({ error: "Already liked" });
     }
 
+    // 게시물 작성자의 이름 또는 ID 가져오기 (author 필드를 사용하거나 해당 필드로 변경)
+    const authorName = post.username; // 예를 들어, author 필드를 사용한다고 가정
+
     // 새로운 좋아요를 배열에 추가
     post.likes.push({ userName });
 
@@ -407,13 +466,25 @@ app.post("/api/posts/:id/like", auth, async (req, res) => {
     // 저장
     await post.save();
 
-    res.json({ likeCount: post.likeCount });
+    // 게시물 작성자의 포인트를 증가시키는 엔드포인트 호출
+    const increasePointsResponse = await axios.post(
+      "http://localhost:5000/api/increasePoints",
+      {
+        username: authorName,
+        point: 15, // 좋아요 추가 시 포인트를 15 증가시킴
+      }
+    );
+
+    if (increasePointsResponse.status === 200) {
+      res.json({ likeCount: post.likeCount });
+    } else {
+      res.status(500).json({ error: "Failed to increase points" });
+    }
   } catch (error) {
     console.error("Error liking post:", error);
     res.status(500).send("Internal Server Error");
   }
 });
-
 
 // Dislike a post
 app.post("/api/posts/:id/dislike", auth, async (req, res) => {
@@ -425,10 +496,15 @@ app.post("/api/posts/:id/dislike", auth, async (req, res) => {
       return res.status(404).json({ error: "Post not found" });
     }
     // 이미 dislikeCount 배열에 사용자 이름이 있는지 확인
-    const hasDisliked = post.dislikes.some((dislike) => dislike.userName === userName);
+    const hasDisliked = post.dislikes.some(
+      (dislike) => dislike.userName === userName
+    );
     if (hasDisliked) {
       return res.status(400).json({ error: "Already disliked" });
     }
+    // 게시물 작성자의 이름 또는 ID 가져오기
+    const authorName = post.username; // 예를 들어, author 필드를 사용한다고 가정
+
     // 새로운 비추천을 배열에 추가
     post.dislikes.push({ userName });
 
@@ -438,13 +514,25 @@ app.post("/api/posts/:id/dislike", auth, async (req, res) => {
     // 저장
     await post.save();
 
-    res.json({ dislikeCount: post.dislikeCount });
+    // 게시물 작성자의 포인트를 감소시키는 엔드포인트 호출
+    const decreasePointsResponse = await axios.post(
+      "http://localhost:5000/api/increasePoints",
+      {
+        username: authorName,
+        point: -15, // 싫어요 추가 시 포인트를 15 감소시킴
+      }
+    );
+
+    if (decreasePointsResponse.status === 200) {
+      res.json({ dislikeCount: post.dislikeCount });
+    } else {
+      res.status(500).json({ error: "Failed to decrease points" });
+    }
   } catch (error) {
     console.error("Error disliking post:", error);
     res.status(500).send("Internal Server Error");
   }
 });
-
 
 app.post("/api/posts/:id/cancelLike", auth, async (req, res) => {
   const postId = req.params.id;
@@ -527,14 +615,18 @@ app.post("/api/posts/:id/cancelDislike", auth, async (req, res) => {
     }
 
     // 이미 dislikeCount 배열에 사용자 이름이 있는지 확인
-    const hasDisliked = post.dislikes.some((dislike) => dislike.userName === userName);
+    const hasDisliked = post.dislikes.some(
+      (dislike) => dislike.userName === userName
+    );
 
     if (!hasDisliked) {
       return res.status(400).json({ error: "Not disliked yet" });
     }
 
     // 사용자 이름에 해당하는 비추천을 배열에서 삭제
-    post.dislikes = post.dislikes.filter((dislike) => dislike.userName !== userName);
+    post.dislikes = post.dislikes.filter(
+      (dislike) => dislike.userName !== userName
+    );
 
     // dislikeCount 업데이트
     post.dislikeCount = post.dislikes.length;
@@ -549,7 +641,7 @@ app.post("/api/posts/:id/cancelDislike", auth, async (req, res) => {
   }
 });
 
-app.delete('/api/posts/:id', async (req, res) => {
+app.delete("/api/posts/:id", auth, async (req, res) => {
   const postId = req.params.id;
 
   try {
@@ -557,19 +649,67 @@ app.delete('/api/posts/:id', async (req, res) => {
     const deletedPost = await Post.findByIdAndRemove(postId);
 
     if (!deletedPost) {
-      return res.status(404).json({ error: 'Post not found' });
+      return res.status(404).json({ error: "Post not found" });
     }
 
-    res.status(204).end(); // 성공적으로 삭제되었음을 응답
+    // 게시물 작성자의 이름 또는 ID 가져오기
+    const authorName = deletedPost.username; // 예를 들어, author 필드를 사용한다고 가정
+
+    // 게시물 작성자의 포인트를 감소시키는 엔드포인트 호출
+    const decreasePointsResponse = await axios.post(
+      "http://localhost:5000/api/increasePoints",
+      {
+        username: authorName,
+        point: -15, // 게시물 삭제 시 포인트를 15 감소시킴
+      }
+    );
+
+    if (decreasePointsResponse.status === 200) {
+      res.status(204).end(); // 성공적으로 삭제되었음을 응답
+    } else {
+      res.status(500).json({ error: "Failed to decrease points" });
+    }
   } catch (error) {
-    console.error('Error deleting post:', error);
-    res.status(500).json({ error: 'Failed to delete post' });
+    console.error("Error deleting post:", error);
+    res.status(500).json({ error: "Failed to delete post" });
   }
 });
+app.get("/api/recent", (req, res) => {
+  // Fetch recent posts for the given username from the database
+  Post.find({ username: "test2" })
+    .sort({ createdAt: -1 })
+    .limit(5)
+    .exec((err, posts) => {
+      if (err) {
+        console.error("Error fetching recent posts:", err);
+        res.status(500).json({ error: "Internal Server Error" });
+      } else {
+        res.json(posts);
+      }
+    });
+});
+/**작성 글 찾기 */
+// app.get("/api/posts/user/:username", async (req, res) => {
+//   try {
+//     console.log(req.params);
+//     const username = req.params.username;
+//     console.log("Username:", username);
+
+//     // Find posts by username
+//     const userPosts = await Post.find({ username: username });
+//     console.log("User Posts:", userPosts);
+
+//     res.status(200).json(userPosts);
+//   } catch (error) {
+//     console.error("Error fetching user posts:", error);
+//     res.status(500).json({ error: "Failed to fetch user posts" });
+//   }
+// });
+
 // ================================================
 // 댓글 기능
 
-app.post('/api/posts/:postId/comments', async (req, res) => {
+app.post("/api/posts/:postId/comments", async (req, res) => {
   try {
     const postId = req.params.postId;
     const { text, author } = req.body; // 클라이언트에서 댓글 텍스트와 작성자 이름을 요청의 본문에서 가져옵니다.
@@ -584,14 +724,15 @@ app.post('/api/posts/:postId/comments', async (req, res) => {
     await post.save();
     res.status(201).json(newComment); // 생성된 댓글을 클라이언트에 반환합니다.
   } catch (error) {
-    console.error('Error creating comment:', error);
-    res.status(500).json({ error: '댓글을 생성하는 동안 오류가 발생했습니다.' });
+    console.error("Error creating comment:", error);
+    res
+      .status(500)
+      .json({ error: "댓글을 생성하는 동안 오류가 발생했습니다." });
   }
 });
 
-
 // 서버의 API 라우터에 추가
-app.get('/api/posts/:postId/comments', async (req, res) => {
+app.get("/api/posts/:postId/comments", async (req, res) => {
   try {
     const postId = req.params.postId;
     // 해당 포스트의 댓글 목록을 가져오는 코드
@@ -599,30 +740,34 @@ app.get('/api/posts/:postId/comments', async (req, res) => {
     // postId로 필터링하여 해당 포스트의 댓글만 가져옵니다.
     res.status(200).json(comments);
   } catch (error) {
-    console.error('Error fetching comments:', error);
-    res.status(500).json({ error: '댓글을 불러오는 동안 오류가 발생했습니다.' });
+    console.error("Error fetching comments:", error);
+    res
+      .status(500)
+      .json({ error: "댓글을 불러오는 동안 오류가 발생했습니다." });
   }
 });
 
-app.get('/api/comments/:commentId', async (req, res) => {
+app.get("/api/comments/:commentId", async (req, res) => {
   try {
     // 댓글 ID를 파라미터에서 가져옴
     const { commentId } = req.params;
     // 댓글 ID로 댓글을 데이터베이스에서 조회
     const comment = await Comment.findById(commentId.toString());
     if (!comment) {
-      return res.status(404).json({ error: '댓글을 찾을 수 없습니다.' });
+      return res.status(404).json({ error: "댓글을 찾을 수 없습니다." });
     }
     // 댓글 내용을 클라이언트에 반환
     res.json(comment);
   } catch (error) {
-    console.error('Error fetching comment:', error);
-    res.status(500).json({ error: '댓글을 가져오는 중에 오류가 발생했습니다.' });
+    console.error("Error fetching comment:", error);
+    res
+      .status(500)
+      .json({ error: "댓글을 가져오는 중에 오류가 발생했습니다." });
   }
 });
 // 댓글 삭제 엔드포인트
 
-app.delete('/api/posts/:postId/comments/:commentId', async (req, res) => {
+app.delete("/api/posts/:postId/comments/:commentId", async (req, res) => {
   const postId = req.params.postId;
   const commentId = req.params.commentId;
 
@@ -632,7 +777,7 @@ app.delete('/api/posts/:postId/comments/:commentId', async (req, res) => {
 
     if (!comment) {
       // 댓글을 찾지 못한 경우
-      return res.status(404).json({ message: '댓글을 찾을 수 없습니다.' });
+      return res.status(404).json({ message: "댓글을 찾을 수 없습니다." });
     }
 
     // 댓글을 삭제
@@ -640,35 +785,36 @@ app.delete('/api/posts/:postId/comments/:commentId', async (req, res) => {
 
     // 댓글 삭제가 성공한 경우
     // 해당 게시물의 comments 배열에서도 삭제
-    await Post.updateOne(
-      { _id: postId },
-      { $pull: { comments: commentId } }
-    );
+    await Post.updateOne({ _id: postId }, { $pull: { comments: commentId } });
 
     res.status(204).send();
   } catch (error) {
     // 에러 처리
-    console.error('Error deleting comment:', error);
-    res.status(500).json({ message: '댓글 삭제 중에 오류가 발생했습니다.' });
+    console.error("Error deleting comment:", error);
+    res.status(500).json({ message: "댓글 삭제 중에 오류가 발생했습니다." });
   }
 });
 
-app.put('/api/posts/:id', async (req, res) => {
+app.put("/api/posts/:id", async (req, res) => {
   const postId = req.params.id;
   const { content } = req.body;
 
   try {
     // 게시물을 불러오고 수정
-    const post = await Post.findByIdAndUpdate(postId, { content }, { new: true });
+    const post = await Post.findByIdAndUpdate(
+      postId,
+      { content },
+      { new: true }
+    );
 
     if (!post) {
-      return res.status(404).json({ error: '게시물을 찾을 수 없습니다.' });
+      return res.status(404).json({ error: "게시물을 찾을 수 없습니다." });
     }
 
     res.json(post);
   } catch (error) {
-    console.error('Error editing post:', error);
-    res.status(500).json({ error: '게시물 수정 중 오류가 발생했습니다.' });
+    console.error("Error editing post:", error);
+    res.status(500).json({ error: "게시물 수정 중 오류가 발생했습니다." });
   }
 });
 
@@ -685,7 +831,7 @@ app.get("/cal/cal/epl", (req, res) => {
       "x-rapidapi-key": "96e6fbd9e1msh363fb680c23119fp131a0ajsn8edccdfdd332",
       "x-rapidapi-host": "api-football-v1.p.rapidapi.com",
       useQueryString: true,
-    }
+    },
   };
 
   axios
@@ -880,8 +1026,6 @@ app.get("/cal/stats/:fixtureId", (req, res) => {
     },
   };
 
-
-
   const req4 = https.request(options, function (response) {
     const chunks = [];
 
@@ -938,19 +1082,18 @@ app.get("/cal/predict/:fixtureId", async (req, res) => {
   console.log("서버 Fixture ID:", fixtureId);
 
   const axiosOptions = {
-    method: 'GET',
+    method: "GET",
     url: `https://api-football-v1.p.rapidapi.com/v3/predictions?fixture=${fixtureId}`,
     headers: {
-      'X-RapidAPI-Key': '96e6fbd9e1msh363fb680c23119fp131a0ajsn8edccdfdd332',
-      'X-RapidAPI-Host': 'api-football-v1.p.rapidapi.com'
-    }
+      "X-RapidAPI-Key": "96e6fbd9e1msh363fb680c23119fp131a0ajsn8edccdfdd332",
+      "X-RapidAPI-Host": "api-football-v1.p.rapidapi.com",
+    },
   };
 
   try {
     const response = await axios(axiosOptions);
     const responseData = response.data;
     //console.log(responseData);
-
 
     if (responseData) {
       res.json(responseData);
@@ -960,7 +1103,9 @@ app.get("/cal/predict/:fixtureId", async (req, res) => {
     }
   } catch (error) {
     console.error("Error:", error);
-    res.status(500).json({ error: "An error occurred while fetching prediction" });
+    res
+      .status(500)
+      .json({ error: "An error occurred while fetching prediction" });
   }
 });
 
@@ -1044,41 +1189,38 @@ app.get("/teamsquad/:teamName", (req, res) => {
         },
       };
       const apiRequest = https.request(options, (apiResponse) => {
-        let data = '';
+        let data = "";
 
-        apiResponse.on('data', (chunk) => {
+        apiResponse.on("data", (chunk) => {
           data += chunk;
         });
 
-        apiResponse.on('end', () => {
+        apiResponse.on("end", () => {
           const teamSquad = JSON.parse(data);
-          console.log(teamSquad)
+          console.log(teamSquad);
           res.json(teamSquad); // Send the team statistics as JSON response to the client
         });
       });
 
-      apiRequest.on('error', (apiError) => {
+      apiRequest.on("error", (apiError) => {
         console.error(apiError);
-        res.status(500).send('Internal server error');
+        res.status(500).send("Internal server error");
       });
 
       apiRequest.end();
     }
   );
 });
-      
-
-
 
 // 팀 스탯
-app.get('/teamstat/:teamName', (req, res) => {
+app.get("/teamstat/:teamName", (req, res) => {
   const teamName = req.params.teamName;
   db.query(
     `SELECT team_id, league_id FROM teams WHERE team_name = '${teamName}'`,
     function (error, results, fields) {
       if (error) {
         console.log(error);
-        res.status(500).send('Internal server error');
+        res.status(500).send("Internal server error");
         return;
       }
       const teamId = results[0].team_id;
@@ -1088,42 +1230,41 @@ app.get('/teamstat/:teamName', (req, res) => {
       console.log(`League ID: ${leagueId}`);
 
       const options = {
-        method: 'GET',
-        hostname: 'api-football-v1.p.rapidapi.com',
+        method: "GET",
+        hostname: "api-football-v1.p.rapidapi.com",
         port: null,
         path: `/v3/teams/statistics?league=${leagueId}&season=2023&team=${teamId}`, // Fixed variable name
         headers: {
-          'x-rapidapi-key': '96e6fbd9e1msh363fb680c23119fp131a0ajsn8edccdfdd332',
-          'x-rapidapi-host': 'api-football-v1.p.rapidapi.com',
+          "x-rapidapi-key":
+            "96e6fbd9e1msh363fb680c23119fp131a0ajsn8edccdfdd332",
+          "x-rapidapi-host": "api-football-v1.p.rapidapi.com",
           useQueryString: true,
         },
       };
 
       const apiRequest = https.request(options, (apiResponse) => {
-        let data = '';
+        let data = "";
 
-        apiResponse.on('data', (chunk) => {
+        apiResponse.on("data", (chunk) => {
           data += chunk;
         });
 
-        apiResponse.on('end', () => {
+        apiResponse.on("end", () => {
           const teamStats = JSON.parse(data);
-          console.log(teamStats)
+          console.log(teamStats);
           res.json(teamStats); // Send the team statistics as JSON response to the client
         });
       });
 
-      apiRequest.on('error', (apiError) => {
+      apiRequest.on("error", (apiError) => {
         console.error(apiError);
-        res.status(500).send('Internal server error');
+        res.status(500).send("Internal server error");
       });
 
       apiRequest.end();
     }
   );
 });
-
-
 
 // 팀분석
 app.get("/teams/:teamName", (req, res) => {
@@ -1267,7 +1408,23 @@ app.get("/teams/:teamName", (req, res) => {
     }
   );
 });
-
+/**색 받아오기 */
+app.get("/api/getusercolor/:username", async (req, res) => {
+  try {
+    const username = req.params.username;
+    console.log(username);
+    const user = await User.findOne({ name: username });
+    console.log(user);
+    if (user) {
+      res.json({ color: user.color });
+    } else {
+      res.status(404).json({ error: "User not found" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
 
 //채팅
 // const rooms = {};
@@ -1412,9 +1569,6 @@ io.on("connection", (socket) => {
     io.emit("roomList", roomList);
   }
 });
-
-
-
 
 server.listen(port, () =>
   console.log(`Example app listening on port ${port}!`)
