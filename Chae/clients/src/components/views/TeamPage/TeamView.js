@@ -10,16 +10,16 @@ function TeamView() {
 
   return (
     <div style={{ display: 'flex', height: '100vh' }}>
-      <div style={{ flex: 1 }}>
-        <TeamInfo teamName={teamName} />
-      </div>
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         <div style={{ flex: 1 }}>
-            <TeamSquad teamName={teamName} />
+        <TeamInfo teamName={teamName} />
         </div>
         <div style={{ flex: 1 }}>
             <TeamStat teamName={teamName} /> {/* TeamStat 컴포넌트에 팀 이름 값을 props로 전달 */}
         </div>
+      </div>
+      <div style={{ flex: 1 }}>
+          <TeamSquad teamName={teamName} />
       </div>
     </div>
   );

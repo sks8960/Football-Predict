@@ -232,6 +232,7 @@ function Post1() {
         console.error("Error deleting comment:", error);
       });
   };
+  
   if (!post) {
     return <div>Loading...</div>;
   }

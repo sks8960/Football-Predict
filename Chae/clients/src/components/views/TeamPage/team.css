@@ -43,7 +43,7 @@ table {
 
 .fixture-table-container {
     flex: 1;
-    margin: 70px;
+    margin: 30px;
     /* 테이블 사이의 간격을 조절할 수 있습니다. */
     max-width: 500px;
     /* 테이블의 최대 너비 설정 */
@@ -51,5 +51,6 @@ table {
 
 .fixture-table-container:not(:last-child) {
     border-right: 1px solid #000;
+    padding-right: 60px;
     /* 테이블 사이의 수직 구분선 스타일을 설정합니다. */
 }

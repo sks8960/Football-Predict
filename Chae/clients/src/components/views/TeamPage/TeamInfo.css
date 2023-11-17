@@ -14,8 +14,8 @@
   }
   
   .team-logo img {
-    max-width: 100px;
-    height: auto;
+    width: 250px;
+    height: 200px;
   }
   
   .team-details {

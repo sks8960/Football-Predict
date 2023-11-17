@@ -54,10 +54,10 @@ function Quadrants() {
       {/* 오른쪽 절반을 가로로 나눔 */}
       <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
         {/* 위쪽 절반 (Space2) */}
-        <div style={{ flex: 1 }}>{/* <TopPlayers /> */}</div>
+        <div style={{ flex: 1 }}>{<TopPlayers />}</div>
 
         {/* 아래쪽 절반 (Space3) */}
-        <div style={{ flex: 1 }}>{/* <TeamRank /> */}</div>
+        <div style={{ flex: 1 }}>{<TeamRank />}</div>
       </div>
     </div>
   );

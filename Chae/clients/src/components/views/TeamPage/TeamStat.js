@@ -31,13 +31,16 @@ const TeamStat = () => {
   }, [teamName]);
   return (
     <div>
-      <h2>팀 통계 페이지 - {teamName}</h2>
       {Object.keys(groupedStats).length === 0 ? (
         <p>데이터를 불러오는 중...</p>
       ) : (
 <div className="table-container">
   <table className="custom-table">
+  
     <tbody>
+      <tr>
+        <th colSpan="2" className="table-headerts">팀 통계</th>
+      </tr>
       <tr>
         <td className="header">팀 이름</td>
         <td>{groupedStats.response.team.name}</td>

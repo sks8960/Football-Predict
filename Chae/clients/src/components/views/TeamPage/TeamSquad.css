@@ -1,5 +1,5 @@
 .team-squad-container {
-  max-height: 400px;
+  max-height: 770px;
   overflow-y: scroll; /* 스크롤 바를 항상 표시하도록 변경 */
   padding: 20px;
   background-color: #f9f9f9;
@@ -8,6 +8,7 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   margin-top: 20px;
   margin-right: 20px;
+  margin-left: 20px;
 }
 
 .team-squad-container::-webkit-scrollbar {

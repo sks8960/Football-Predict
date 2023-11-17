@@ -18,9 +18,12 @@
 }
 
 .post-content-1 {
-  font-size: 16px;
-  margin-top: 10px;
-  margin-bottom: 20px;
+  padding: 15px;
+  border: 1px solid #ddd; /* 테두리 스타일 및 색상 지정 */
+  border-radius: 8px; /* 테두리 둥글게 만들기 */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 그림자 추가 */
+  background-color: #f9f9f9; /* 배경색 지정 */
+  margin-bottom: 20px; /* 원하는 여백 지정 */
 }
 
 .post-time-1 {
