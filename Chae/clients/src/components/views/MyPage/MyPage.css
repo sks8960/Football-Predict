@@ -1,42 +1,105 @@
 .mypage {
+  display: flex;
+  justify-content: center;
+  height: 700px;
+}
+
+.mypage-container {
+  display: flex;
+}
+
+.mypage-left,
+.mypage-right {
   text-align: center;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.mypage-left {
+  flex: 1;
+  margin-right: 20px;
+  width: 100%; /* Fill the width */
+}
+
+.mypage-right {
+  flex: 1;
+  width: 600px; /* Fill the width */
 }
 
 .mypage-title {
   font-size: 24px;
 }
 
-.mypage-user-info {
-  margin: 20px;
-  padding: 20px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  text-align: center;
-}
-
 .mypage-info {
   margin: 5px 0;
 }
 
-/* MyPage.css */
+.friend-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  margin-left: 150px;
+}
+
+.friend-link {
+  text-decoration: none;
+  color: inherit;
+  width: 40px;
+  margin-right: 10px; /* Add margin to the right to separate the name and the button */
+}
+
+.friend-item button {
+  padding: 5px 10px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.friend-item button:hover {
+  background-color: #45a049;
+}
 
 .recent-posts {
-  text-align: center; /* Center-align the content inside .recent-posts */
+  text-align: center;
+  margin-top: 20px;
+}
+
+.recent-posts h2 {
+  font-size: 18px;
+  margin-bottom: 10px;
 }
 
 .post-link {
-  text-decoration: none; /* Remove underline */
-  color: inherit; /* Inherit the color from the parent */
-}
-/* MyPage.css */
-
-ul {
-  list-style: none; /* Remove default list styles (bullets) */
-  padding: 0; /* Remove default padding */
-  margin: 0; /* Remove default margin */
+  text-decoration: none;
+  color: inherit;
 }
 
-.post-link {
-  text-decoration: none; /* Remove underline */
-  color: inherit; /* Inherit the color from the parent */
+.friends-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.recent-posts ul {
+  text-align: left;
+  padding: 15px;
+  margin: 0;
+  font-size: 25px;
+}
+.mypage-league {
+  margin: 5px 0;
+}
+
+.mypage-logo {
+  max-width: 200px; /* Set the maximum width of the logo */
+  height: auto; /* Maintain the aspect ratio */
+  cursor: pointer;
+  display: block; /* Make the image a block element */
+  margin: 0 auto; /* Center the image horizontally */
 }

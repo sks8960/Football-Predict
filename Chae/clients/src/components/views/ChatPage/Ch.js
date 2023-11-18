@@ -82,76 +82,78 @@ function App() {
   };
 
   return (
-    <div className="chat-container">
-      <div className="chat-header">
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <p>{room ? `참여 방: ${room}` : "방을 입력해주세요"}</p>
-          {room && (
-            <button className="leave-room-button" onClick={leaveRoom}>
-              나가기
-            </button>
-          )}
-        </div>
-        <div className="room-buttons">
-          {rooms.map((roomInfo) => (
-            <div key={roomInfo.roomName}>
-              <button
-                className="room-button"
-                onClick={() => joinRoom(roomInfo.roomName)}
-              >
-                {roomInfo.roomName} ({roomInfo.users} users)
+    <div className="all">
+      <div className="chat-container">
+        <div className="chat-header">
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <p>{room ? `참여 방: ${room}` : "방을 입력해주세요"}</p>
+            {room && (
+              <button className="leave-room-button" onClick={leaveRoom}>
+                나가기
               </button>
-            </div>
-          ))}
+            )}
+          </div>
+          <div className="room-buttons">
+            {rooms.map((roomInfo) => (
+              <div key={roomInfo.roomName}>
+                <button
+                  className="room-button"
+                  onClick={() => joinRoom(roomInfo.roomName)}
+                >
+                  {roomInfo.roomName} ({roomInfo.users} users)
+                </button>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
 
-      {!room && (
-        <>
+        {!room && (
+          <>
+            <input
+              className="chat-input"
+              type="text"
+              value={createRoomInput}
+              onChange={(e) => setCreateRoomInput(e.target.value)}
+              placeholder="방 이름"
+            />
+            <button className="enter-button" onClick={createAndJoinRoom}>
+              방참가
+            </button>
+          </>
+        )}
+
+        <div className="chat-nickname">
           <input
-            className="chat-input"
             type="text"
-            value={createRoomInput}
-            onChange={(e) => setCreateRoomInput(e.target.value)}
-            placeholder="방 이름"
+            value={nickname}
+            onChange={(e) => setNickname(e.target.value)}
+            placeholder="원하는 닉네임을 적어주세요"
+            disabled
           />
-          <button className="chat-button" onClick={createAndJoinRoom}>
-            방참가
-          </button>
-        </>
-      )}
-
-      <div className="chat-nickname">
-        <input
-          type="text"
-          value={nickname}
-          onChange={(e) => setNickname(e.target.value)}
-          placeholder="원하는 닉네임을 적어주세요"
-          disabled
-        />
-      </div>
-      <button className="change-nickname-button" onClick={changeNickname}>
-        닉네임 변경
-      </button>
-      <div className="chat-messages">
-        <div>
-          {messages.map((msg, index) => (
-            <div className="chat-message" key={index}>
-              {msg.nickname}: {msg.text}
-            </div>
-          ))}
         </div>
-        <div className="chat-input-container">
-          <input
-            className="chat-input"
-            type="text"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            placeholder="메시지를 입력하세요."
-          />
-          <button className="chat-button" onClick={sendMessage}>
-            보내기
-          </button>
+        <button className="change-nickname-button" onClick={changeNickname}>
+          닉네임 변경
+        </button>
+        <div className="chat-messages">
+          <div>
+            {messages.map((msg, index) => (
+              <div className="chat-message" key={index}>
+                {msg.nickname}: {msg.text}
+              </div>
+            ))}
+          </div>
+          <div className="chat-input-container">
+            <input
+              className="chat-input"
+              type="text"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              placeholder="메시지를 입력하세요."
+            />
+            <button className="chat-button" onClick={sendMessage}>
+              보내기
+            </button>
+          </div>
         </div>
       </div>
     </div>
